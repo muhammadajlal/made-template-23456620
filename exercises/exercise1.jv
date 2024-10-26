@@ -25,12 +25,13 @@ pipeline AirportsPipeline {
         delete: [column J, column K, column L, column M];
     }
 
-    valuetype IATAType oftype text {
-    constraints: [ ValidIATACodeOrZero ];
-    }
+    //valuetype IATAType oftype text {
+    //constraints: [ ValidIATACodeOrZero ];
+    //}
 
-    constraint ValidIATACodeOrZero on text:
-    value in ["0", "o", "NaN", "O"] or (value matches /^[A-Z]*$/);
+    //constraint ValidIATACodeOrZero on text:
+    //value == "0" or (value matches /^[A-Z]*$/);
+
 
     block AirportsTableInterpreter oftype TableInterpreter {
         header: true;
@@ -39,7 +40,7 @@ pipeline AirportsPipeline {
             "Name des Flughafens" oftype text,
             "Ort" oftype text,
             "Land" oftype text,
-            "IATA" oftype IATAType,
+            "IATA" oftype text,
             "ICAO" oftype text,
             'Latitude' oftype decimal,
             "Longitude" oftype decimal,
