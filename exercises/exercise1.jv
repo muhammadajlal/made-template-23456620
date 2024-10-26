@@ -1,14 +1,12 @@
 pipeline AirportsPipeline {
 
+    // Using single pipe for better readability
     AirportsExtractor
     -> AirportsTextfileInterpreter
     -> AirportsCSVInterpreter
     -> AirportsColumnDeleter
     -> AirportsTableInterpreter
     -> AirportsLoader;
-
-
-
 
     block AirportsExtractor oftype HttpExtractor {
         url: "https://opendata.rhein-kreis-neuss.de/api/explore/v2.1/catalog/datasets/rhein-kreis-neuss-flughafen-weltweit/exports/csv?lang=en&timezone=Europe%2FBerlin&use_labels=true&delimiter=%3B";
@@ -21,17 +19,10 @@ pipeline AirportsPipeline {
         delimiter: ';';
     }
 
+    // I knoww its redundant but implemented it just for the sake of learning
     block AirportsColumnDeleter oftype ColumnDeleter {
         delete: [column J, column K, column L, column M];
     }
-
-    //valuetype IATAType oftype text {
-    //constraints: [ ValidIATACodeOrZero ];
-    //}
-
-    //constraint ValidIATACodeOrZero on text:
-    //value == "0" or (value matches /^[A-Z]*$/);
-
 
     block AirportsTableInterpreter oftype TableInterpreter {
         header: true;
@@ -46,7 +37,6 @@ pipeline AirportsPipeline {
             "Longitude" oftype decimal,
             "Altitude" oftype integer,
         ];
-
     }
 
     block AirportsLoader oftype SQLiteLoader {
