@@ -38,6 +38,7 @@ pipeline AirportsPipeline {
             "Longitude" oftype decimal,
             "Altitude" oftype decimal,
         ];
+        
     }
 
     block AirportsLoader oftype SQLiteLoader {
