@@ -30,7 +30,7 @@ pipeline AirportsPipeline {
     }
 
     constraint ValidIATACodeOrZero on text:
-    value in ["0"] xor (value matches /^[A-Z]{3}$/);
+    value == "0" xor (value matches /^[A-Z]*$/);
 
     block AirportsTableInterpreter oftype TableInterpreter {
         header: true;
