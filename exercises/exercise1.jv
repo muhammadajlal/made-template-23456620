@@ -25,6 +25,13 @@ pipeline AirportsPipeline {
         delete: [column J, column K, column L, column M];
     }
 
+    valuetype IATAType oftype text {
+    constraints: [ ValidIATACodeOrZero ];
+    }
+
+    constraint ValidIATACodeOrZero on text:
+    value == "0" or (value matches /^[A-Z]{3}$/);
+
     block AirportsTableInterpreter oftype TableInterpreter {
         header: true;
         columns: [
@@ -32,13 +39,13 @@ pipeline AirportsPipeline {
             "Name des Flughafens" oftype text,
             "Ort" oftype text,
             "Land" oftype text,
-            "IATA" oftype text,
+            "IATA" oftype IATAType,
             "ICAO" oftype text,
             'Latitude' oftype decimal,
             "Longitude" oftype decimal,
             "Altitude" oftype decimal,
         ];
-        
+
     }
 
     block AirportsLoader oftype SQLiteLoader {
