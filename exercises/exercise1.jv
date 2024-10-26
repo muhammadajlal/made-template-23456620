@@ -30,7 +30,7 @@ pipeline AirportsPipeline {
     }
 
     constraint ValidIATACodeOrZero on text:
-    value == "0" or (value matches /^[A-Z]{3}$/);
+    value in ["0"] or (value matches /^[A-Z]{3}$/);
 
     block AirportsTableInterpreter oftype TableInterpreter {
         header: true;
@@ -43,7 +43,7 @@ pipeline AirportsPipeline {
             "ICAO" oftype text,
             'Latitude' oftype decimal,
             "Longitude" oftype decimal,
-            "Altitude" oftype decimal,
+            "Altitude" oftype integer,
         ];
 
     }
