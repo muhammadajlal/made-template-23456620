@@ -33,9 +33,10 @@ pipeline AirportsPipeline {
             "Ort" oftype text,
             "Land" oftype text,
             "IATA" oftype text,
+            "ICAO" oftype text,
             'Latitude' oftype decimal,
             "Longitude" oftype decimal,
-            "Altitude" oftype integer,
+            "Altitude" oftype decimal,
         ];
     }
 
