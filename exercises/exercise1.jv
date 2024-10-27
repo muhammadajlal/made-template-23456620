@@ -8,22 +8,26 @@ pipeline AirportsPipeline {
     -> AirportsTableInterpreter
     -> AirportsLoader;
 
+    // Extracting data from the given URL
     block AirportsExtractor oftype HttpExtractor {
         url: "https://opendata.rhein-kreis-neuss.de/api/explore/v2.1/catalog/datasets/rhein-kreis-neuss-flughafen-weltweit/exports/csv?lang=en&timezone=Europe%2FBerlin&use_labels=true&delimiter=%3B";
     }
 
+    // Interpreting the data as text file
     block AirportsTextFileInterpreter oftype TextFileInterpreter {
     }
 
+    // Interpreting the file file as CSV to convert it into a sheet
     block AirportsCSVInterpreter oftype CSVInterpreter {
         delimiter: ';';
     }
 
-    // I knoww its redundant but implemented it just for the sake of learning
+    // Deleting the Columns that we don't need
     block AirportsColumnDeleter oftype ColumnDeleter {
         delete: [column J, column K, column L, column M];
     }
 
+    // Interpreting the sheet as a table
     block AirportsTableInterpreter oftype TableInterpreter {
         header: true;
         columns: [
@@ -39,6 +43,7 @@ pipeline AirportsPipeline {
         ];
     }
 
+    // Loading the data into a SQLite database
     block AirportsLoader oftype SQLiteLoader {
         table: "airports";
         file: "./airports.sqlite";
