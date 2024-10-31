@@ -4,7 +4,6 @@ pipeline AirportsPipeline {
     AirportsExtractor
     -> AirportsTextFileInterpreter
     -> AirportsCSVInterpreter
-    -> AirportsColumnDeleter
     -> AirportsTableInterpreter
     -> AirportsLoader;
 
@@ -21,12 +20,7 @@ pipeline AirportsPipeline {
     block AirportsCSVInterpreter oftype CSVInterpreter {
         delimiter: ';';
     }
-
-    // Deleting the Columns that we don't need
-    block AirportsColumnDeleter oftype ColumnDeleter {
-        delete: [column J, column K, column L, column M];
-    }
-
+    
     // Interpreting the sheet as a table
     block AirportsTableInterpreter oftype TableInterpreter {
         header: true;
