@@ -1,38 +1,27 @@
 pipeline TreesPipeline{
 
+    // Using single pipe for better readability
     TreesExtractor
     -> TreesTextFileInterpreter
     -> TreesCSVInterpreter
     -> TreesTableInterpreter
     -> TreesLoader;
 
+    // Extracting data from the given URL
     block TreesExtractor oftype HttpExtractor {
         url: "https://opendata.rhein-kreis-neuss.de/api/v2/catalog/datasets/stadt-neuss-herbstpflanzung-2023/exports/csv";
     }
 
+    // Interpreting the data as text file
     block TreesTextFileInterpreter oftype TextFileInterpreter {
     }
 
+    // Interpreting the text file file as CSV to convert it into a sheet
     block TreesCSVInterpreter oftype CSVInterpreter {
         delimiter: ';';
     }
 
-    constraint StadtteilStartsWithVogelsang oftype RegexConstraint {
-    regex: /^Vogelsang\b.*/;
-    }
-
-    constraint GeoPointPattern oftype RegexConstraint {
-    regex: /^\d{1,3}\.\d+,\s?\d{1,3}\.\d+$/;
-    }
-
-    valuetype validStadtteilName oftype text {
-    constraints : [StadtteilStartsWithVogelsang];
-    } 
-
-    valuetype validGeoPoint oftype text {
-    constraints : [GeoPointPattern];
-    }
-
+    // Interpreting the sheet as a table
     block TreesTableInterpreter oftype TableInterpreter {
         header: true;
         columns: [
@@ -45,9 +34,28 @@ pipeline TreesPipeline{
             ];
     }
 
+    // Loading the data into a SQLite database
     block TreesLoader oftype SQLiteLoader {
         table: "trees";
         file: "./trees.sqlite";
     }
 
+}
+
+// Defining constraints for the data so that rows with invalid values can be dropped
+constraint StadtteilStartsWithVogelsang oftype RegexConstraint {
+regex: /^Vogelsang\b.*/;
+}
+
+constraint GeoPointPattern oftype RegexConstraint {
+regex: /^\d{1,3}\.\d+,\s?\d{1,3}\.\d+$/;
+}
+
+// Defining custome data types by using our defined constraints for our Table Interpreter
+valuetype validStadtteilName oftype text {
+constraints : [StadtteilStartsWithVogelsang];
+} 
+
+valuetype validGeoPoint oftype text {
+constraints : [GeoPointPattern];
 }
