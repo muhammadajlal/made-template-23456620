@@ -4,6 +4,7 @@ pipeline TreesPipeline{
     TreesExtractor
     -> TreesTextFileInterpreter
     -> TreesCSVInterpreter
+    -> TreesColumnDeleter
     -> TreesTableInterpreter
     -> TreesLoader;
 
@@ -19,6 +20,10 @@ pipeline TreesPipeline{
     // Interpreting the text file file as CSV to convert it into a sheet
     block TreesCSVInterpreter oftype CSVInterpreter {
         delimiter: ';';
+    }
+
+    block TreesColumnDeleter oftype ColumnDeleter {
+        delete: [column E];
     }
 
     // Interpreting the sheet as a table
@@ -48,7 +53,7 @@ regex: /^Vogelsang\b.*/;
 }
 
 constraint GeoPointPattern oftype RegexConstraint {
-regex: /^\d{1,3}\.\d+,\s?\d{1,3}\.\d+$/;
+regex: /([0-9]{1,3}\.[0-9]+), ([0-9]{1,3}\.[0-9]+)/;
 }
 
 // Defining custome data types by using our defined constraints for our Table Interpreter
