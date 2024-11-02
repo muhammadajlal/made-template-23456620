@@ -22,14 +22,14 @@ pipeline TreesPipeline{
     }
 
     constraint GeoPointPattern oftype RegexConstraint {
-    regex: /^\d{1,3}\.\d+,\s\d{1,3}\.\d+$/;
+    regex: /^\d{1,3}\.\d+,\s?\d{1,3}\.\d+$/;
     }
 
     valuetype validStadtteilName oftype text {
     constraints : [StadtteilStartsWithVogelsang];
     } 
 
-    valuetype validGeoPoint oftype decimal {
+    valuetype validGeoPoint oftype text {
     constraints : [GeoPointPattern];
     }
 
