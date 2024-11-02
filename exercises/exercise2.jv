@@ -22,6 +22,7 @@ pipeline TreesPipeline{
         delimiter: ';';
     }
 
+    // Deleting the column E(baumart_deutsch) from the sheet as we only want to keep data we are interested in
     block TreesColumnDeleter oftype ColumnDeleter {
         delete: [column E];
     }
