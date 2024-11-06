@@ -35,28 +35,28 @@ Analysis Steps:
 * Data URL: https://fred.stlouisfed.org/release?t=&et=&rid=113&ob=pv&od=&tg=&tt=&pageID=2 (Unemployment Rate Data) - Optional
 * Data Type: CSV
 
-Release: Consumer Price Index (Inflation)
+Consumer Price Index (Inflation)
 Source: U.S. Bureau of Labor Statistics   
 Units:  Index 1982-1984=100
 Frequency:  Monthly
 
-Release: Real Disposable Personal Income
+Real Disposable Personal Income
 Source: U.S. Bureau of Economic Analysis
 Units:  Billions of Chained 2017 Dollars
 Frequency:  Annual
 
 
-Release: Real Median Household Income
+Real Median Household Income
 Source: U.S. Census Bureau  
 Units:  2023 C-CPI-U Dollars
 Frequency:  Annual
 
-Release: 30-Year Fixed Rate Mortgage Average
+30-Year Fixed Rate Mortgage Average
 Source: Freddie Mac   
 Units:  Percent
 Frequency:  Weekly
 
-Release: Unemployment Rates
+Unemployment Rates
 Source: U.S. Bureau of Labor Statistics   
 Units:  Percent
 Frequency:  Monthly
