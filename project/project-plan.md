@@ -2,12 +2,12 @@
 
 ## Title
 <!-- Give your project a short title. -->
-Analyzing Affect of Selected Macroeconomic Indicators on Housing Affordability.
+Analyzing Effect of Selected Macroeconomic Indicators on Housing Affordability.
 
 ## Main Question
 
 <!-- Think about one main question you want to answer based on the data. -->
-A case study of top 10 Metroplitans of USA: How macro-economic indicators (inflation, interest rates, unemployment, and income) has affected the housing affordability over last 10 years.
+A case study of top 10 Metroplitans of USA: How macro-economic indicators (inflation, interest rates, unemployment, and income) has effected the housing affordability over last 10 years.
 
 ## Description
 
@@ -71,10 +71,10 @@ Frequency:  Monthly
 * Data URL: https://files.zillowstatic.com/research/public_csvs/zordi/Metro_zordi_uc_sfrcondomfr_month.csv?t=1730644371 (All Hometypes Combined Rental Demand)
 * Data Type: CSV
 
-# Short description of the DataSource:
+#### Short description of the DataSource:
 The Zillow Economic Research team publishes a variety of real estate metrics including median home values and rents, inventory, sale prices and volumes, negative equity, home value forecasts and many more. Most datasets are available at the neighborhood, ZIP code, city, county, metro, state and national levels, and many include data as far back as the late 1990s. All data accessed and downloaded from this page is free for public use by consumers, media, analysts, academics and policymakers, consistent with our published Terms of Use. Proper and clear attribution of all data to Zillow is required.
 
-# We will use three different datasets built using a different index, each index is for a different purpose as described below.
+#### We will use three different datasets built using a different index, each index is for a different purpose as described below.
 1. Home Prices: Zillow Home Value Index (ZHVI): A measure of the typical home value and market changes across a given region and housing type. It reflects the typical value for homes in the 35th to 65th percentile range.
 2. Home Rental Prices: Zillow Observed Rent Index (ZORI): A smoothed measure of the typical observed market rate rent across a given region. ZORI is a repeat-rent index that is weighted to the rental housing stock to ensure representativeness across the entire market, not just those homes currently listed for-rent. The index is dollar-denominated by computing the mean of listed rents that fall into the 35th to 65th percentile range for all homes and apartments in a given region, which is weighted to reflect the rental housing stock.
 3. Rental Home Demand: Zillow Observed Renter Demand Index (ZORDI): A measure of the typical observed rental market engagement across a region. ZORDI tracks engagement on Zillow’s rental listings to proxy changes in rental demand. The metric is smoothed to remove volatility. 
