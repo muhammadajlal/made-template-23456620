@@ -56,7 +56,7 @@ Source: Freddie Mac.
 Units:  Percent.  
 Frequency:  Weekly  
 
-- Unemployment Rates
+- Unemployment Rates.  
 Source: U.S. Bureau of Labor Statistics.     
 Units:  Percent.  
 Frequency:  Monthly  
