@@ -36,11 +36,8 @@ Analysis Steps:
 * Data Type: CSV
 
 Consumer Price Index (Inflation).  
-
 Source: U.S. Bureau of Labor Statistics.  
-
-Units:  Index 1982-1984=100.  
-
+Units:  Index 1982-1984=100.   
 Frequency:  Monthly
 
 Real Disposable Personal Income
