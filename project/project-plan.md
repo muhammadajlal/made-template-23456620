@@ -26,7 +26,7 @@ Analysis Steps:
 
 <!-- Describe each datasources you plan to use in a section. Use the prefic "DatasourceX" where X is the id of the datasource. -->
 
-### Datasource1: ExampleSource
+### Datasource1: 
 * Metadata URL: https://fred.stlouisfed.org/
 * Data URL: https://tinyurl.com/CPIInflationcsv (CPI)
 * Data URL: https://tinyurl.com/RMHIncomecsv (Median Household Income)
@@ -61,7 +61,7 @@ Source: U.S. Bureau of Labor Statistics.
 Units:  Percent.  
 Frequency:  Monthly  
 
-### Datasource2: ExampleSource
+### Datasource2: 
 * Metadata URL: https://www.zillow.com/research/data/
 * Data URL: https://files.zillowstatic.com/research/public_csvs/zori/Metro_zori_uc_sfr_sm_month.csv?t=1730644371 (Single Family Rentals)
 * Data URL: https://files.zillowstatic.com/research/public_csvs/zori/Metro_zori_uc_sfrcondomfr_sm_sa_month.csv?t=1730644371 (All Homes Combined Rentals)
