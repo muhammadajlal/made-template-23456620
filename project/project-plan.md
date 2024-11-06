@@ -35,9 +35,12 @@ Analysis Steps:
 * Data URL: https://fred.stlouisfed.org/release?t=&et=&rid=113&ob=pv&od=&tg=&tt=&pageID=2 (Unemployment Rate Data) - Optional
 * Data Type: CSV
 
-Consumer Price Index (Inflation)
-Source: U.S. Bureau of Labor Statistics   
-Units:  Index 1982-1984=100
+Consumer Price Index (Inflation).  
+
+Source: U.S. Bureau of Labor Statistics.  
+
+Units:  Index 1982-1984=100.  
+
 Frequency:  Monthly
 
 Real Disposable Personal Income
