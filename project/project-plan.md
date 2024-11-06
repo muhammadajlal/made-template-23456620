@@ -42,24 +42,24 @@ Frequency:  Monthly
 
 - Real Disposable Personal Income.  
 Source: U.S. Bureau of Economic Analysis.  
-Units:  Billions of Chained 2017 Dollars.
-Frequency:  Annual.
+Units:  Billions of Chained 2017 Dollars.  
+Frequency:  Annual.  
 
 
-Real Median Household Income
-Source: U.S. Census Bureau  
-Units:  2023 C-CPI-U Dollars
-Frequency:  Annual
+- Real Median Household Income.  
+Source: U.S. Census Bureau.    
+Units:  2023 C-CPI-U Dollars.  
+Frequency:  Annual.  
 
-30-Year Fixed Rate Mortgage Average
-Source: Freddie Mac   
-Units:  Percent
-Frequency:  Weekly
+- 30-Year Fixed Rate Mortgage Average.  
+Source: Freddie Mac.  
+Units:  Percent.  
+Frequency:  Weekly  
 
-Unemployment Rates
-Source: U.S. Bureau of Labor Statistics   
-Units:  Percent
-Frequency:  Monthly
+- Unemployment Rates
+Source: U.S. Bureau of Labor Statistics.     
+Units:  Percent.  
+Frequency:  Monthly  
 
 ### Datasource2: ExampleSource
 * Metadata URL: https://www.zillow.com/research/data/
