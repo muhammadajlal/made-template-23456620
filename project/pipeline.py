@@ -4,6 +4,7 @@ import requests
 from io import StringIO
 from sklearn.linear_model import LinearRegression
 from sklearn.preprocessing import LabelEncoder
+from sklearn.ensemble import GradientBoostingRegressor
 
 # Data Sources Dictionary
 DATA_SOURCES = {
@@ -181,7 +182,7 @@ def load_data(final_merged_data: pd.DataFrame, data_type: str, index: int, name:
     except Exception as e:
         print(f"Error in final_merged_data loading to {file_path}: {e}")
 
-def Regress_2014_Missing_RentalPrice(final_merged_data: pd.DataFrame) -> pd.DataFrame:
+def Regress_Missing_RentalPrice(final_merged_data: pd.DataFrame) -> pd.DataFrame:
     try:
 
         
@@ -202,7 +203,7 @@ def Regress_2014_Missing_RentalPrice(final_merged_data: pd.DataFrame) -> pd.Data
 
         # Loop through each target column to fit and predict missing values for 2014
         for target in target_columns:
-            model = LinearRegression()
+            model = GradientBoostingRegressor(random_state=42, n_estimators=100, learning_rate=0.1, max_depth=3)
 
             # Filter out rows where the target value is missing
             train_data_filtered = final_merged_data.dropna(subset=[target])
@@ -225,7 +226,109 @@ def Regress_2014_Missing_RentalPrice(final_merged_data: pd.DataFrame) -> pd.Data
             final_merged_data.loc[(final_merged_data['DATE'] >= '2014-01-01') & 
                                 (final_merged_data['DATE'] <= '2014-12-01'), target] = predictions
             
-        print(f"Missing values in year 2014 for {target_columns} successfully filled using Linear Regression.\n{'-'*150}")
+        print(f"Missing values in year 2014 for {target_columns} successfully filled using Gradient Bossting Regressor.")
+        final_merged_data.drop(columns=['Region_Encoded', 'Year', 'Month'], inplace=True)
+        return final_merged_data
+
+    except Exception as e:
+        print(f"Error in regression model: {e}")
+        return pd.DataFrame()
+    
+
+
+def Regress_Missing_RentalDemand(final_merged_data: pd.DataFrame) -> pd.DataFrame:
+    try:
+        # Create Year and Month Columns for regression model
+        final_merged_data['Year'] = final_merged_data['DATE'].dt.year
+        final_merged_data['Month'] = final_merged_data['DATE'].dt.month
+
+        # Encode the Region column for regression model
+        le = LabelEncoder()
+        final_merged_data['Region_Encoded'] = le.fit_transform(final_merged_data['Region'])
+
+        # Define predictors and target variables
+        predictors = ['Year', 'Month', 'SF_HomePrice', 'All_HomePrice', 'Region_Encoded'] 
+        target_columns = ['SF_RentalDemand', 'All_RentalDemand']
+
+        # Loop through each target column to fit and predict missing values for 2014
+        for target in target_columns:
+            model = GradientBoostingRegressor(random_state=42, n_estimators=100, learning_rate=0.1, max_depth=3)
+
+            # Filter out rows where the target value is missing
+            train_data_filtered = final_merged_data.dropna(subset=[target])
+
+            # Define X_train and y_train
+            X_train = train_data_filtered[predictors]
+            y_train = train_data_filtered[target]
+
+            # Fit the model
+            model.fit(X_train, y_train)
+
+            # Define the final_merged_data for 2014 that we want to predict
+            X_2014_17 = final_merged_data[(final_merged_data['DATE'] >= '2014-01-01') & 
+                                       (final_merged_data['DATE'] <= '2017-12-01')][predictors]
+
+            # Predict for 2014
+            predictions = model.predict(X_2014_17)
+
+            # Fill missing values for the target column
+            final_merged_data.loc[(final_merged_data['DATE'] >= '2014-01-01') & 
+                                  (final_merged_data['DATE'] <= '2017-12-01'), target] = predictions
+
+        print(f"Missing values in years 2014-17 for {target_columns} successfully filled using Gradient Boosting Regressor.")
+        final_merged_data.drop(columns=['Region_Encoded', 'Year', 'Month'], inplace=True)
+        return final_merged_data
+
+    except Exception as e:
+        print(f"Error in regression model: {e}")
+        return pd.DataFrame()
+    
+
+from sklearn.ensemble import GradientBoostingRegressor
+from sklearn.preprocessing import LabelEncoder
+import pandas as pd
+
+def Regress_Missing_HeatIndex(final_merged_data: pd.DataFrame) -> pd.DataFrame:
+    try:
+        # Create Year and Month Columns for regression model
+        final_merged_data['Year'] = final_merged_data['DATE'].dt.year
+        final_merged_data['Month'] = final_merged_data['DATE'].dt.month
+
+        # Encode the Region column for regression model
+        le = LabelEncoder()
+        final_merged_data['Region_Encoded'] = le.fit_transform(final_merged_data['Region'])
+        final_merged_data['Region'] = le.inverse_transform(final_merged_data['Region_Encoded'])
+
+        # Define predictors and target variables
+        predictors = ['Year', 'Month', 'SF_HomePrice', 'All_HomePrice', 'Region_Encoded']
+        target_columns = ['H_Mkt_HeatIndex']
+
+        # Loop through each target column to fit and predict missing values for 2014
+        for target in target_columns:
+            model = GradientBoostingRegressor(random_state=42, n_estimators=100, learning_rate=0.1, max_depth=3)
+
+            # Filter out rows where the target value is missing
+            train_data_filtered = final_merged_data.dropna(subset=[target])
+
+            # Define X_train and y_train
+            X_train = train_data_filtered[predictors]
+            y_train = train_data_filtered[target]
+
+            # Fit the model
+            model.fit(X_train, y_train)
+
+            # Define the final_merged_data for 2014 that we want to predict
+            X_2014_20 = final_merged_data[(final_merged_data['DATE'] >= '2014-01-01') & 
+                                       (final_merged_data['DATE'] <= '2019-12-01')][predictors]
+
+            # Predict for 2014
+            predictions = model.predict(X_2014_20)
+
+            # Fill missing values for the target column
+            final_merged_data.loc[(final_merged_data['DATE'] >= '2014-01-01') & 
+                                  (final_merged_data['DATE'] <= '2019-12-01'), target] = predictions
+
+        print(f"Missing values in years 2014-20 for {target_columns} successfully filled using Gradient Boosting Regressor.\n{'-'*150}")
         final_merged_data.drop(columns=['Region_Encoded', 'Year', 'Month'], inplace=True)
         return final_merged_data
 
@@ -281,7 +384,9 @@ def merge_n_clean_transformed_data(macroeconomic_transformed_data, housing_trans
         final_merged_data = housing_merged_data.merge(macroeconomic_merged_data, on="DATE", how="left")
 
         # Fill missing values in the final_merged_data using Linear Regression
-        final_merged_data = Regress_2014_Missing_RentalPrice(final_merged_data)
+        final_merged_data = Regress_Missing_RentalPrice(final_merged_data)
+        final_merged_data = Regress_Missing_RentalDemand(final_merged_data)
+        final_merged_data = Regress_Missing_HeatIndex(final_merged_data)
 
         # Save the final merged dataset with predictions
         if final_merged_data is not None:
