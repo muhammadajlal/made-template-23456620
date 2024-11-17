@@ -47,7 +47,7 @@ pipeline WorldBankPipeline {
         header: true;
         columns: [
             "Country Code" oftype validCountryCode,
-            "Bonnd Issuance Share" oftype bondShare
+            "Bond Issuance Share" oftype bondShare
         ];
     }
 
@@ -79,7 +79,7 @@ pipeline WorldBankPipeline {
         header: true;
         columns: [
             "Country Code" oftype validCountryCode,
-            "GDP per capita" oftype positiveDecimal,
+            "GDP per Capita" oftype positiveDecimal,
         ];
     }
 
