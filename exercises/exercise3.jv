@@ -53,25 +53,7 @@ pipeline WorldBankPipeline {
         file: "./country-stats.sqlite";
     }
 
-    block gdpPerCapitaSheetPicker oftype SheetPicker {
-    sheetName: 'Figure S5.1.2';
-    }
-
-    block gdpPerCapitaNameHeaderWriter oftype CellWriter {
-    at: range P2:S2;
-    write: [
-      "Country Code",
-      "Economy",
-      "GDP per Capita",
-      "Bond Issuance Share",
-    ];
-    }
-
-    block gdpPerCapitaRowDeleter oftype RowDeleter {
-   delete: [row 1];
-    }
-
-    // Select the range of interest from the specified sheet
+    // Implementing Logic for the second table
     block gdpPerCapitaTableInterpreter oftype TableInterpreter {
         header: true;
         columns: [
@@ -99,7 +81,7 @@ constraint PositiveDecimal oftype RangeConstraint {
 }
 
 constraint BondShareRange oftype RangeConstraint {
-    lowerBound: 0; // Positive decimal value
+    lowerBound: 0; 
     upperBound: 1;
 }
 
