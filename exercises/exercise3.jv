@@ -9,10 +9,7 @@ pipeline WorldBankPipeline {
     -> BondIssuanceTableInterpreter
     -> BondIssuanceLoader;
 
-    BondIssuanceXLSXInterpreter
-    -> gdpPerCapitaSheetPicker
-    -> gdpPerCapitaNameHeaderWriter
-    -> gdpPerCapitaRowDeleter
+    BondIssuanceRowDeleter
     -> gdpPerCapitaTableInterpreter
     -> gdpPerCapitaLoader;
 
