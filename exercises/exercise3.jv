@@ -1,0 +1,119 @@
+
+pipeline WorldBankPipeline {
+
+    WorldBankExtractor
+    -> BondIssuanceXLSXInterpreter
+    -> BondIssuanceSheetPicker
+    -> BondIssuanceNameHeaderWriter
+    -> BondIssuanceRowDeleter
+    -> BondIssuanceTableInterpreter
+    -> BondIssuanceLoader;
+
+    BondIssuanceXLSXInterpreter
+    -> gdpPerCapitaSheetPicker
+    -> gdpPerCapitaNameHeaderWriter
+    -> gdpPerCapitaRowDeleter
+    -> gdpPerCapitaTableInterpreter
+    -> gdpPerCapitaLoader;
+
+
+    // Define the data source as an Excel file from the given URL
+    block WorldBankExtractor oftype HttpExtractor {
+        url: "https://thedocs.worldbank.org/en/doc/7d852628d96b9411d43e5d36d5dff941-0050062022/original/Graphs-Chapter-5-02082022.xlsx";
+    }
+    // Load the Excel data
+    block  BondIssuanceXLSXInterpreter oftype XLSXInterpreter {}
+
+    block BondIssuanceSheetPicker oftype SheetPicker {
+    sheetName: 'Figure S5.1.2';
+    }
+
+    block BondIssuanceNameHeaderWriter oftype CellWriter {
+    at: range P2:S2;
+    write: [
+      "Country Code",
+      "Economy",
+      "GDP per Capita",
+      "Bond Issuance Share",
+    ];
+    }
+
+    block BondIssuanceRowDeleter oftype RowDeleter {
+   delete: [row 1];
+    }
+
+    // Select the range of interest from the specified sheet
+    block BondIssuanceTableInterpreter oftype TableInterpreter {
+        header: true;
+        columns: [
+            "Country Code" oftype validCountryCode,
+            "Bonnd Issuance Share" oftype bondShare
+        ];
+    }
+
+    block BondIssuanceLoader oftype SQLiteLoader {
+        table: "bondIssuance";
+        file: "./country-stats.sqlite";
+    }
+
+    block gdpPerCapitaSheetPicker oftype SheetPicker {
+    sheetName: 'Figure S5.1.2';
+    }
+
+    block gdpPerCapitaNameHeaderWriter oftype CellWriter {
+    at: range P2:S2;
+    write: [
+      "Country Code",
+      "Economy",
+      "GDP per Capita",
+      "Bond Issuance Share",
+    ];
+    }
+
+    block gdpPerCapitaRowDeleter oftype RowDeleter {
+   delete: [row 1];
+    }
+
+    // Select the range of interest from the specified sheet
+    block gdpPerCapitaTableInterpreter oftype TableInterpreter {
+        header: true;
+        columns: [
+            "Country Code" oftype validCountryCode,
+            "GDP per capita" oftype positiveDecimal,
+        ];
+    }
+
+    block gdpPerCapitaLoader oftype SQLiteLoader {
+        table: "gdpPerCapita";
+        file: "./country-stats.sqlite";
+    }
+
+
+}
+
+// Define constraints and validation
+constraint ISOFormat oftype RegexConstraint {
+    regex: /^[A-Z]{3}$/; 
+}
+
+constraint PositiveDecimal oftype RangeConstraint {
+   lowerBound: 0;
+   lowerBoundInclusive: false;
+}
+
+constraint BondShareRange oftype RangeConstraint {
+    lowerBound: 0; // Positive decimal value
+    upperBound: 1;
+}
+
+valuetype validCountryCode oftype text {
+    constraints: [ISOFormat];
+}
+
+valuetype positiveDecimal oftype decimal {
+    constraints: [PositiveDecimal];
+}
+
+valuetype bondShare oftype decimal {
+    constraints: [BondShareRange];
+}
