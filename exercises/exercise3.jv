@@ -1,98 +1,96 @@
+pipeline CountryStatsPipeline {
 
-pipeline WorldBankPipeline {
+    CountryStatsExtractor
+        -> CountryStatsXLXSInterpreter
+        -> CountryStatsSheetPicker
+        -> CountryStatsDataSelector;
 
-    WorldBankExtractor
-    -> BondIssuanceXLSXInterpreter
-    -> BondIssuanceSheetPicker
-    -> BondIssuanceNameHeaderWriter
-    -> BondIssuanceRowDeleter
-    -> BondIssuanceTableInterpreter
-    -> BondIssuanceLoader;
+    CountryStatsDataSelector
+        -> CountryStatsColumnDeleter
+        -> CountryStatsCellsTableInterpreter
+        -> CountryStatsCellsLoader;
 
-    BondIssuanceRowDeleter
-    -> gdpPerCapitaTableInterpreter
-    -> gdpPerCapitaLoader;
+    CountryStatsDataSelector
+        -> SecondCountryStatsColumnDeleter
+        -> SecondCountryStatsCellsTableInterpreter
+        -> SecondCountryStatsCellsLoader;
 
 
-    // Define the data source as an Excel file from the given URL
-    block WorldBankExtractor oftype HttpExtractor {
+
+    block CountryStatsExtractor oftype HttpExtractor {
         url: "https://thedocs.worldbank.org/en/doc/7d852628d96b9411d43e5d36d5dff941-0050062022/original/Graphs-Chapter-5-02082022.xlsx";
     }
-    // Load the Excel data
-    block  BondIssuanceXLSXInterpreter oftype XLSXInterpreter {}
 
-    block BondIssuanceSheetPicker oftype SheetPicker {
-    sheetName: 'Figure S5.1.2';
+    block CountryStatsXLXSInterpreter oftype XLSXInterpreter { }
+
+    block CountryStatsSheetPicker oftype SheetPicker {
+        sheetName: "Figure S5.1.2";
     }
 
-    block BondIssuanceNameHeaderWriter oftype CellWriter {
-    at: range P2:S2;
-    write: [
-      "Country Code",
-      "Economy",
-      "GDP per Capita",
-      "Bond Issuance Share",
-    ];
+    block CountryStatsDataSelector oftype CellRangeSelector {
+        select: range P2:S45;
     }
 
-    block BondIssuanceRowDeleter oftype RowDeleter {
-   delete: [row 1];
-    }
 
-    // Select the range of interest from the specified sheet
-    block BondIssuanceTableInterpreter oftype TableInterpreter {
-        header: true;
-        columns: [
-            "Country Code" oftype validCountryCode,
-            "Bond Issuance Share" oftype bondShare
+    block CountryStatsColumnDeleter oftype ColumnDeleter {
+        delete: [ column B, column C
         ];
     }
 
-    block BondIssuanceLoader oftype SQLiteLoader {
+    block CountryStatsCellsTableInterpreter oftype TableInterpreter {
+        header: false;
+        columns: [
+            "Country Code" oftype CountryCodeAlpha3,
+            "Bond Issuance Share" oftype BIS
+        ];
+    }
+
+    block CountryStatsCellsLoader oftype SQLiteLoader {
         table: "bondIssuance";
         file: "./country-stats.sqlite";
     }
 
-    // Implementing Logic for the second table
-    block gdpPerCapitaTableInterpreter oftype TableInterpreter {
-        header: true;
-        columns: [
-            "Country Code" oftype validCountryCode,
-            "GDP per Capita" oftype positiveDecimal,
+    // block SecondCountryStatsSheetPicker oftype SheetPicker {
+    //     sheetName: "Figure S5.1.2";
+    // }
+
+    // block SecondCountryStatsDataSelector oftype CellRangeSelector {
+    //     select: range P2:S45;
+    // }
+
+    block SecondCountryStatsColumnDeleter oftype ColumnDeleter {
+        delete: [ column B, column D
         ];
     }
 
-    block gdpPerCapitaLoader oftype SQLiteLoader {
+    block SecondCountryStatsCellsTableInterpreter oftype TableInterpreter {
+        header: false;
+        columns: [
+            "Country Code" oftype CountryCodeAlpha3,
+            "GDP per Capita" oftype GDP
+        ];
+    }
+
+    block SecondCountryStatsCellsLoader oftype SQLiteLoader {
         table: "gdpPerCapita";
         file: "./country-stats.sqlite";
     }
-
-
+} 
+    valuetype BIS oftype decimal {
+    constraints: [
+        BIS_Valid
+    ];
 }
-
-// Define constraints and validation
-constraint ISOFormat oftype RegexConstraint {
-    regex: /^[A-Z]{3}$/; 
-}
-
-constraint PositiveDecimal oftype RangeConstraint {
-   lowerBound: 0;
-   lowerBoundInclusive: false;
-}
-
-constraint BondShareRange oftype RangeConstraint {
-    lowerBound: 0; 
+    constraint BIS_Valid oftype RangeConstraint {
+    lowerBound: 0;
     upperBound: 1;
 }
 
-valuetype validCountryCode oftype text {
-    constraints: [ISOFormat];
+    valuetype GDP oftype decimal {
+    constraints: [
+        GDP_Valid
+    ];
 }
-
-valuetype positiveDecimal oftype decimal {
-    constraints: [PositiveDecimal];
-}
-
-valuetype bondShare oftype decimal {
-    constraints: [BondShareRange];
+    constraint GDP_Valid oftype RangeConstraint {
+    lowerBound: 0;
 }
