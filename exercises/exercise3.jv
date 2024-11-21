@@ -18,7 +18,7 @@ pipeline WolrdBankPipeline {
         -> gdpPerCapitaLoader;
 
 
-    // Defining the blocks
+    // Defining the Composite block
     block WolrdBankExtractor oftype HttpExtractor {
         url: "https://thedocs.worldBank.org/en/doc/7d852628d96b9411d43e5d36d5dff941-0050062022/original/Graphs-Chapter-5-02082022.xlsx";
     }
@@ -43,7 +43,7 @@ pipeline WolrdBankPipeline {
     ];
     }
 
-    // Implementing logic to get the “bondIssuance” table
+    // Implementing logic to get the “bondIssuance” table by using output of composite block
     block bondIssuanceTableInterpreter oftype TableInterpreter {
         header: true;
         columns: [
@@ -57,7 +57,7 @@ pipeline WolrdBankPipeline {
         file: "./country-stats.sqlite";
     }
 
-    // Implementing logic to get the “gdpPerCapita” table
+    // Implementing logic to get the “gdpPerCapita” table by using output of composite block
     block gdpPerCapitaTableInterpreter oftype TableInterpreter {
         header: true;
         columns: [
