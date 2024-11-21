@@ -1,6 +1,7 @@
 pipeline WolrdBankPipeline {
 
     // Defining a pipeline with three pipes
+    // First pipe or Composite block to get data
     WolrdBankExtractor
         -> WolrdBankXLXSInterpreter
         -> WolrdBankSheetPicker
