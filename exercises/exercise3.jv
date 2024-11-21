@@ -1,15 +1,19 @@
 
 pipeline WorldBankPipeline {
 
+    // Defining a pipeline with three pipes
     WorldBankExtractor
-    -> BondIssuanceXLSXInterpreter
-    -> BondIssuanceSheetPicker
-    -> BondIssuanceNameHeaderWriter
-    -> BondIssuanceRowDeleter
+    -> WorldBankXLSXInterpreter
+    -> WorldBankSheetPicker
+    -> RangeSelector;
+
+    // Second pipe for the first table
+    RangeSelector
     -> BondIssuanceTableInterpreter
     -> BondIssuanceLoader;
 
-    BondIssuanceRowDeleter
+    // third pipe for the second table
+    RangeSelector
     -> gdpPerCapitaTableInterpreter
     -> gdpPerCapitaLoader;
 
@@ -19,35 +23,26 @@ pipeline WorldBankPipeline {
         url: "https://thedocs.worldbank.org/en/doc/7d852628d96b9411d43e5d36d5dff941-0050062022/original/Graphs-Chapter-5-02082022.xlsx";
     }
     // Load the Excel data
-    block  BondIssuanceXLSXInterpreter oftype XLSXInterpreter {}
+    block  WorldBankXLSXInterpreter oftype XLSXInterpreter {}
 
-    block BondIssuanceSheetPicker oftype SheetPicker {
+    block WorldBankSheetPicker oftype SheetPicker {
     sheetName: 'Figure S5.1.2';
     }
 
-    block BondIssuanceNameHeaderWriter oftype CellWriter {
-    at: range P2:S2;
-    write: [
-      "Country Code",
-      "Economy",
-      "GDP per Capita",
-      "Bond Issuance Share",
-    ];
+    block RangeSelector oftype CellRangeSelector {
+        select: range P2:S45;
     }
 
-    block BondIssuanceRowDeleter oftype RowDeleter {
-   delete: [row 1];
-    }
-
-    // Select the range of interest from the specified sheet
+    // Setting up the first table
     block BondIssuanceTableInterpreter oftype TableInterpreter {
-        header: true;
+        header: false;
         columns: [
-            "Country Code" oftype validCountryCode,
-            "Bond Issuance Share" oftype bondShare
+            "Country Code" oftype CountryCodeAlpha3,
+            "Bond Issuance Share" oftype bondShare_range
         ];
     }
 
+    // loading first table to SQLite
     block BondIssuanceLoader oftype SQLiteLoader {
         table: "bondIssuance";
         file: "./country-stats.sqlite";
@@ -55,13 +50,14 @@ pipeline WorldBankPipeline {
 
     // Implementing Logic for the second table
     block gdpPerCapitaTableInterpreter oftype TableInterpreter {
-        header: true;
+        header: false;
         columns: [
-            "Country Code" oftype validCountryCode,
-            "GDP per Capita" oftype positiveDecimal,
+            "Country Code" oftype CountryCodeAlpha3,
+            "GDP per Capita" oftype PositiveDecimal_GDP,
         ];
     }
 
+    // loading second table to SQLite
     block gdpPerCapitaLoader oftype SQLiteLoader {
         table: "gdpPerCapita";
         file: "./country-stats.sqlite";
@@ -71,10 +67,6 @@ pipeline WorldBankPipeline {
 }
 
 // Define constraints and validation
-constraint ISOFormat oftype RegexConstraint {
-    regex: /^[A-Z]{3}$/; 
-}
-
 constraint PositiveDecimal oftype RangeConstraint {
    lowerBound: 0;
    lowerBoundInclusive: false;
@@ -85,14 +77,10 @@ constraint BondShareRange oftype RangeConstraint {
     upperBound: 1;
 }
 
-valuetype validCountryCode oftype text {
-    constraints: [ISOFormat];
-}
-
-valuetype positiveDecimal oftype decimal {
+valuetype PositiveDecimal_GDP oftype decimal {
     constraints: [PositiveDecimal];
 }
 
-valuetype bondShare oftype decimal {
+valuetype bondShare_range oftype decimal {
     constraints: [BondShareRange];
 }
