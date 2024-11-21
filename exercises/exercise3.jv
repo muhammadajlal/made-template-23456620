@@ -4,17 +4,16 @@ pipeline WolrdBankPipeline {
     WolrdBankExtractor
         -> WolrdBankXLXSInterpreter
         -> WolrdBankSheetPicker
-        -> WolrdBankCellRangeSelector;
+        -> WolrdBankCellRangeSelector
+        -> WorldBankNameHeaderWriter;
 
     // Second pipe for “bondIssuance” table
-    WolrdBankCellRangeSelector
-        -> bondIssuanceColumnDeleter
+    WorldBankNameHeaderWriter
         -> bondIssuanceTableInterpreter
         -> bondIssuanceLoader;
 
     // Third pipe for gdpPerCapita table
-    WolrdBankCellRangeSelector
-        -> gdpPerCapitaColumnDeleter
+    WorldBankNameHeaderWriter
         -> gdpPerCapitaTableInterpreter
         -> gdpPerCapitaLoader;
 
@@ -34,13 +33,19 @@ pipeline WolrdBankPipeline {
         select: range P2:S45;
     }
 
-    // Implementing logic to get the “bondIssuance” table
-    block bondIssuanceColumnDeleter oftype ColumnDeleter {
-        delete: [ column B, column C];
+    block WorldBankNameHeaderWriter oftype CellWriter {
+    at: range A1:D1;
+    write: [
+      "Country Code",
+      "Economy",
+      "GDP per Capita",
+      "Bond Issuance Share",
+    ];
     }
 
+    // Implementing logic to get the “bondIssuance” table
     block bondIssuanceTableInterpreter oftype TableInterpreter {
-        header: false;
+        header: true;
         columns: [
             "Country Code" oftype CountryCodeAlpha3,
             "Bond Issuance Share" oftype BondValueRangeType
@@ -52,13 +57,9 @@ pipeline WolrdBankPipeline {
         file: "./country-stats.sqlite";
     }
 
-    // // Implementing logic to get the “gdpPerCapita” table
-    block gdpPerCapitaColumnDeleter oftype ColumnDeleter {
-        delete: [column B, column D];
-    }
-
+    // Implementing logic to get the “gdpPerCapita” table
     block gdpPerCapitaTableInterpreter oftype TableInterpreter {
-        header: false;
+        header: true;
         columns: [
             "Country Code" oftype CountryCodeAlpha3,
             "GDP per Capita" oftype PositiveDecimalGDPType
