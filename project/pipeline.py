@@ -12,7 +12,6 @@ DATA_SOURCES = {
         {"name": "Interest Rates (30-Year Fixed Mortgage)", "url": "https://tinyurl.com/mortgagecsv"},
         {"name": "Interest Rates (15-Year Fixed Mortgage)", "url": "https://tinyurl.com/15mortgagecsv"},
         {"name": "Real Disposable Personal Income", "url": "https://tinyurl.com/RDPIcsv"},
-        # Add additional macroeconomic URLs here
     ],
     "housing": [
         {"name": "Single Family Home Prices", "url": "https://files.zillowstatic.com/research/public_csvs/zhvi/Metro_zhvi_uc_sfr_tier_0.33_0.67_sm_sa_month.csv?t=1730644370"},
@@ -22,9 +21,6 @@ DATA_SOURCES = {
         {"name": "Single Family Rental Home Demand", "url": "https://files.zillowstatic.com/research/public_csvs/zordi/Metro_zordi_uc_sfr_month.csv?t=1730644371"},
         {"name": "All Hometypes Rental Home Demand", "url": " https://files.zillowstatic.com/research/public_csvs/zordi/Metro_zordi_uc_sfrcondomfr_month.csv?t=1730644371"},
         {"name": "All Hometypes Housing Market Heat Index", "url": "https://files.zillowstatic.com/research/public_csvs/market_temp_index/Metro_market_temp_index_uc_sfrcondo_month.csv?t=1730644371"},
-
-        #{"name": "Shared/Cooperative Apartment Price", "url": "https://files.zillowstatic.com/research/public_csvs/zhvi/Metro_zhvi_uc_condo_tier_0.33_0.67_sm_sa_month.csv?t=1730644370"},
-        #{"name": "Shared/Cooperative Apartment Rental Apartment Demand", "url": "https://files.zillowstatic.com/research/public_csvs/zordi/Metro_zordi_uc_condo_month.csv?t=1730644371"},
     ]
 }
 
@@ -35,51 +31,51 @@ housing_output_file = os.path.join(OUTPUT_DIR, "merged_housing_dataset.csv")
 final_output_file = os.path.join(OUTPUT_DIR, "final_merged_dataset.csv")
 
 
-# Extraction of final_merged_data
+# Extraction of Data
 def extract_data(url: str) -> pd.DataFrame:
     try:
         response = requests.get(url)
         response.raise_for_status()
-        final_merged_data = pd.read_csv(StringIO(response.text))
+        data = pd.read_csv(StringIO(response.text))
         print(f"Data extraction successful from {url}")
-        return final_merged_data
+        return data
     except Exception as e:
-        print(f"Error in final_merged_data extraction from {url}: {e}")
+        print(f"Error in data extraction from {url}: {e}")
         return pd.DataFrame()
 
 # Tranformation of Data
 # 1. CPI (Consumer Price Index) Data Transformation
-def transform_cpi_data(final_merged_data: pd.DataFrame) -> pd.DataFrame:
+def transform_cpi_data(data: pd.DataFrame) -> pd.DataFrame:
     try:
         # Feature Enginnering (Generating YoY Percentage Change)
-        YoY_Percentage_Change_Inflation = final_merged_data['CPIAUCNS'].pct_change(periods=12) * 100
+        YoY_Percentage_Change_Inflation = data['CPIAUCNS'].pct_change(periods=12) * 100
         YoY_Percentage_Change_Inflation = YoY_Percentage_Change_Inflation.round(1)
-        final_merged_data.insert(2, 'Inflation', YoY_Percentage_Change_Inflation)
-        # Filtering out the final_merged_data for the last 10 years
-        final_merged_data['DATE'] = pd.to_datetime(final_merged_data['DATE'])  # Convert 'DATE' column to datetime objects
-        final_merged_data = final_merged_data[final_merged_data['DATE'] >= '2014-01-01']
+        data.insert(2, 'Inflation', YoY_Percentage_Change_Inflation)
+        # Filtering out the data for the last 10 years
+        data['DATE'] = pd.to_datetime(data['DATE'])  # Convert 'DATE' column to datetime objects
+        data = data[data['DATE'] >= '2014-01-01']
         # Renaming column for better clarity
-        final_merged_data = final_merged_data.rename(columns={'CPIAUCNS': 'CPI'})
+        data = data.rename(columns={'CPIAUCNS': 'CPI'})
         print("CPI Data transformation successful.")
-        return final_merged_data
+        return data
     except Exception as e:
         print(f"Error in final_merged_data transformation: {e}")
         return pd.DataFrame()
 
 # 2. Interest Rates (30-Year Fixed Mortgage) Data Transformation
-def transform_interest_rate_data(final_merged_data: pd.DataFrame, rate_type: str = '30Y') -> pd.DataFrame:
+def transform_interest_rate_data(data: pd.DataFrame, rate_type: str = '30Y') -> pd.DataFrame:
     try:
         # Select the correct column based on the rate type
         rate_column = 'MORTGAGE30US' if rate_type == '30Y' else 'MORTGAGE15US'
         output_column = f"{rate_column}_MonthlyAvg"
         
         # Convert DATE column to datetime and extract Month and Year
-        final_merged_data['DATE'] = pd.to_datetime(final_merged_data['DATE'])
-        final_merged_data['Month'] = final_merged_data['DATE'].dt.month
-        final_merged_data['Year'] = final_merged_data['DATE'].dt.year
+        data['DATE'] = pd.to_datetime(data['DATE'])
+        data['Month'] = data['DATE'].dt.month
+        data['Year'] = data['DATE'].dt.year
 
         # Calculate the monthly average
-        monthly_avg = final_merged_data.groupby(['Year', 'Month'], as_index=False)[rate_column].mean()
+        monthly_avg = data.groupby(['Year', 'Month'], as_index=False)[rate_column].mean()
         monthly_avg['DATE'] = pd.to_datetime(monthly_avg[['Year', 'Month']].assign(DAY=1))
         
         # Rename the column for clarity
@@ -96,85 +92,85 @@ def transform_interest_rate_data(final_merged_data: pd.DataFrame, rate_type: str
         return pd.DataFrame()
 
 # 3. Real Disposable Income Data Transformation
-def transform_disposable_income_data(final_merged_data: pd.DataFrame) -> pd.DataFrame:
+def transform_disposable_income_data(data: pd.DataFrame) -> pd.DataFrame:
     try:
-        # Filtering out the final_merged_data for the last 10 years
-        final_merged_data['DATE'] = pd.to_datetime(final_merged_data['DATE'])
-        final_merged_data = final_merged_data[final_merged_data['DATE'] >= '2014-01-01']
+        # Filtering out the data for the last 10 years
+        data['DATE'] = pd.to_datetime(data['DATE'])
+        data = data[data['DATE'] >= '2014-01-01']
         # Renaming column for better clarity
-        final_merged_data = final_merged_data.rename(columns={'DSPIC96': 'RDP_Income'})
+        data = data.rename(columns={'DSPIC96': 'RDP_Income'})
         print("Disposable Income Data transformation successful.")
-        return final_merged_data
+        return data
     except Exception as e:
         print(f"Error in final_merged_data transformation: {e}")
         return pd.DataFrame()
 
 # 4. Zillow Home Price/Rental/Demand Data Transformation    
-def transform_zillow_home_price_and_rental_data(final_merged_data: pd.DataFrame, data_type: str) -> pd.DataFrame:
+def transform_zillow_home_price_and_rental_data(data: pd.DataFrame, data_type: str) -> pd.DataFrame:
     try:
         # Filtering top 10 biggest Metropolitan Areas based on size rank
-        final_merged_data = final_merged_data[final_merged_data['SizeRank'] <= 10]
+        data = data[data['SizeRank'] <= 10]
         # Setting 'RegionName' as the index so that we can melt the dataframe as we need
-        final_merged_data = final_merged_data.set_index('RegionName')
+        data = data.set_index('RegionName')
         # Dropping unnecessary columns 
-        final_merged_data = final_merged_data.drop(columns=['RegionID', 'SizeRank', 'RegionType', 'StateName'])
+        data = data.drop(columns=['RegionID', 'SizeRank', 'RegionType', 'StateName'])
         # Transposing the final_merged_data into long format
-        df_transposed = final_merged_data.T  
+        df_transposed = data.T  
         df_transposed = df_transposed.reset_index() 
-        df_transposed.columns = ['DATE'] + final_merged_data.index.tolist() 
-        final_merged_data = pd.melt(df_transposed, id_vars='DATE', var_name='Region', value_name = data_type) 
-        # Filtering out the final_merged_data for the last 10 years
-        final_merged_data['DATE'] = pd.to_datetime(final_merged_data['DATE'])
-        final_merged_data = final_merged_data[final_merged_data['DATE'] >= '2014-01-01']
+        df_transposed.columns = ['DATE'] + data.index.tolist() 
+        data = pd.melt(df_transposed, id_vars='DATE', var_name='Region', value_name = data_type) 
+        # Filtering out the data for the last 10 years
+        data['DATE'] = pd.to_datetime(data['DATE'])
+        data = data[data['DATE'] >= '2014-01-01']
 
         print(f"{data_type} Data transformation successful.")
-        return final_merged_data
+        return data
     except Exception as e:
         print(f"Error in final_merged_data transformation: {e}")
         return pd.DataFrame()
 
-# Transformation Dispatcher
+# Transformation Dispatcher helper dictionary
 TRANSFORMATION_FUNCTIONS = {
     "CPI": transform_cpi_data,
-    "Interest Rates (30-Year Fixed Mortgage)": lambda final_merged_data: transform_interest_rate_data(final_merged_data, rate_type='30Y'),
-    "Interest Rates (15-Year Fixed Mortgage)": lambda final_merged_data: transform_interest_rate_data(final_merged_data, rate_type='15Y'),
+    "Interest Rates (30-Year Fixed Mortgage)": lambda data: transform_interest_rate_data(data, rate_type='30Y'),
+    "Interest Rates (15-Year Fixed Mortgage)": lambda data: transform_interest_rate_data(data, rate_type='15Y'),
     "Real Disposable Personal Income": transform_disposable_income_data,
-    "Single Family Home Prices": lambda final_merged_data: transform_zillow_home_price_and_rental_data(final_merged_data, data_type="SF_HomePrice"),
-    "All Hometypes Combined Prices": lambda final_merged_data: transform_zillow_home_price_and_rental_data(final_merged_data, data_type="All_HomePrice"),
-    "Single Family Rental Prices": lambda final_merged_data: transform_zillow_home_price_and_rental_data(final_merged_data, data_type="SF_RentalPrice"),
-    "All Hometypes Rental Prices": lambda final_merged_data: transform_zillow_home_price_and_rental_data(final_merged_data, data_type="All_RentalPrice"),
-    "Single Family Rental Home Demand": lambda final_merged_data: transform_zillow_home_price_and_rental_data(final_merged_data, data_type="SF_RentalDemand"),
-    "All Hometypes Rental Home Demand": lambda final_merged_data: transform_zillow_home_price_and_rental_data(final_merged_data, data_type="All_RentalDemand"),
-    "All Hometypes Housing Market Heat Index": lambda final_merged_data: transform_zillow_home_price_and_rental_data(final_merged_data, data_type="H_Mkt_HeatIndex")
-    # Add other datasets and their respective transformation functions here
+    "Single Family Home Prices": lambda data: transform_zillow_home_price_and_rental_data(data, data_type="SF_HomePrice"),
+    "All Hometypes Combined Prices": lambda data: transform_zillow_home_price_and_rental_data(data, data_type="All_HomePrice"),
+    "Single Family Rental Prices": lambda data: transform_zillow_home_price_and_rental_data(data, data_type="SF_RentalPrice"),
+    "All Hometypes Rental Prices": lambda data: transform_zillow_home_price_and_rental_data(data, data_type="All_RentalPrice"),
+    "Single Family Rental Home Demand": lambda data: transform_zillow_home_price_and_rental_data(data, data_type="SF_RentalDemand"),
+    "All Hometypes Rental Home Demand": lambda data: transform_zillow_home_price_and_rental_data(data, data_type="All_RentalDemand"),
+    "All Hometypes Housing Market Heat Index": lambda data: transform_zillow_home_price_and_rental_data(data, data_type="H_Mkt_HeatIndex")
+
 }
 
 # Main Transformation Dispatcher
-def transform_data(final_merged_data: pd.DataFrame, name: str) -> pd.DataFrame:
+def transform_data(data: pd.DataFrame, name: str) -> pd.DataFrame:
     try:
         # Call the appropriate transformation function based on dataset name
         if name in TRANSFORMATION_FUNCTIONS:
-            final_merged_data = TRANSFORMATION_FUNCTIONS[name](final_merged_data)
+            data = TRANSFORMATION_FUNCTIONS[name](data)
         else:
             print(f"No specific transformation function found for {name}. Using default transformation.")
             # Apply any general transformations here if needed, or return the final_merged_data as is.
         
-        return final_merged_data
+        return data
     except Exception as e:
-        print(f"Error in final_merged_data transformation for {name}: {e}")
+        print(f"Error in transformation for {name}: {e}")
         return pd.DataFrame()
 
 # Loading Data
-def load_data(final_merged_data: pd.DataFrame, data_type: str, index: int, name: str):
+def load_data(data: pd.DataFrame, data_type: str, index: int, name: str):
     os.makedirs(OUTPUT_DIR, exist_ok=True)
     file_path = os.path.join(OUTPUT_DIR, f"{data_type}_data_{index}.csv")
     try:
-        final_merged_data.to_csv(file_path, index=False)
-        print(f"{name} final_merged_data loaded successfully into {file_path}\n{'-'*150}")
+        data.to_csv(file_path, index=False)
+        print(f"{name} data loaded successfully into {file_path}\n{'-'*150}")
     except Exception as e:
-        print(f"Error in final_merged_data loading to {file_path}: {e}")
+        print(f"Error in loading {name} data to {file_path}: {e}")
 
-# Regression Model to fill missing values
+# Regression Model to fill missing values in the final_merged_data
 def Regress_Missing_Values(final_merged_data: pd.DataFrame, 
                            target_column: str, 
                            time_range_to_predict: tuple, 
@@ -318,10 +314,10 @@ def main():
             print(f"Processing {name} ({data_type} dataset {idx})")
             
             # Extraction
-            final_merged_data = extract_data(url)
-            if not final_merged_data.empty:
+            data = extract_data(url)
+            if not data.empty:
 
-                transformed_data = transform_data(final_merged_data, name)
+                transformed_data = transform_data(data, name)
             
                 # Store transformed final_merged_data
                 if data_type == "macroeconomic":
