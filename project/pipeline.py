@@ -54,7 +54,7 @@ def transform_cpi_data(final_merged_data: pd.DataFrame) -> pd.DataFrame:
         # Feature Enginnering (Generating YoY Percentage Change)
         YoY_Percentage_Change_Inflation = final_merged_data['CPIAUCNS'].pct_change(periods=12) * 100
         YoY_Percentage_Change_Inflation = YoY_Percentage_Change_Inflation.round(1)
-        final_merged_data.insert(2, 'YoY_%Change_CPI(Inflation)', YoY_Percentage_Change_Inflation)
+        final_merged_data.insert(2, 'Inflation', YoY_Percentage_Change_Inflation)
         # Filtering out the final_merged_data for the last 10 years
         final_merged_data['DATE'] = pd.to_datetime(final_merged_data['DATE'])  # Convert 'DATE' column to datetime objects
         final_merged_data = final_merged_data[final_merged_data['DATE'] >= '2014-01-01']

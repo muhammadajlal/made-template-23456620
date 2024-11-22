@@ -2,12 +2,12 @@
 
 ## Title
 <!-- Give your project a short title. -->
-Analyzing Effect of Selected Macroeconomic Indicators on Housing Affordability in USA.
+Case Study of Top 10 Metropolitans of USA: Relation of Macroeconomic Indicators (Inflation, Interest Rates, and Income) & Housing Affordability
 
 ## Main Question
 
 <!-- Think about one main question you want to answer based on the data. -->
-A case study of top 10 Metroplitans of USA: How macro-economic indicators (Inflation, Interest Rates, and Income) has effected the housing affordability over last 10 years.
+Analyzing Relationship of Selected Macroeconomic Indicators & Housing Affordability in the USA.
 
 ## Description
 
@@ -17,10 +17,10 @@ As a student living in Germany, and having experienced overal invrease in inflat
 Analysis Steps:
 1. Analyzing CPI with single home prices and all homes prices.
 2. Analyzing CPI with single home rent prices and all home rent prices.
-3. Analyzing 30-year-fixed mortgage rates with the demand of single family and all homes combined.
-4. Analyzing real-median-household growth income with CPI, home prices, and home rental prices.
-5. Analyzing real-disposable-personal-income growth income with CPI, home prices, and home rental prices.
-6. (Tentative) Analyzing the effect of unemployment rate on house affordability. 
+3. Analyzing 30/15-year-fixed mortgage rates with the demand of single family and all homes combined.
+4. Analyzing real-disposable-personal-income growth with CPI, home prices, and home rental prices.
+5. Analyzing Housing Market heat Index with different macroeconomic indicators. 
+5. (Tentative) Analyzing the effect of unemployment rate on house affordability. 
 
 ## Datasources
 
@@ -29,14 +29,16 @@ Analysis Steps:
 ### Datasource1: 
 * Metadata URL: https://fred.stlouisfed.org/
 * Data URL: https://tinyurl.com/CPIInflationcsv (CPI)
-* Data URL: https://tinyurl.com/RMHIncomecsv (Median Household Income)
+<!-- * Data URL: https://tinyurl.com/RMHIncomecsv (Median Household Income) -->
 * Data URL: https://tinyurl.com/RDPIcsv (Real Disposable Personal Income)
-* Data URL: https://tinyurl.com/mortgagecsv (Mortgage Fixed Rates)
+* Data URL: https://tinyurl.com/mortgagecsv (30Y Mortgage Fixed Rates)
+* Data URL: https://tinyurl.com/15mortgagecsv (15Y Mortgage Fixed Rates)
 <!-- * Data URL: https://fred.stlouisfed.org/release?t=&et=&rid=113&ob=pv&od=&tg=&tt=&pageID=2 (Unemployment Rate Data) - Optional -->
 * Data Type: CSV
 
 #### Short description of the DataSource:
 Federal Reserve Bank of St. Louis (FRED) USA, is a database of more than 800,000 economic data series from over 100 sources covering issues and information relating to banking, business, consumer and producer price indices, employment, population, exchange rates, gross domestic product, interest rates, trade and international transactions, and U.S. financial data. In general, the Federal Reserve Bank of St. Louis encourages the use of FRED data, and associated materials, to support policymakers, researchers, journalists, teachers, students, businesses, and the general public. FRED provides data and data services to the public for non-commercial, educational, and personal uses subject to a few prohibitions.
+
 All the macro-economic data is sourced from official website of Federal Reserve Bank of St. Louis (FRED), USA. FRED collects data from different government departments e.g., U.S. Bureau of Labor Statistics (BLS) etc and then adds some value to these data sources to make them analysis ready. For example,  BLS provides most of the CPI data in chunks and FRED compiles all the data into a timeseries data with some value additions like smoothing the data for seasoanlity etc. Although, we have downloaded everyhting from FRED but the original departmental sources of different indicators are give below.  
 
 - Consumer Price Index (Inflation).  
@@ -48,7 +50,6 @@ Frequency:  Monthly
 Source: U.S. Bureau of Economic Analysis.  
 Units:  Billions of Chained 2017 Dollars.  
 Frequency:  Monthly.  
-
 
 - Real Median Household Income.  
 Source: U.S. Census Bureau.    
@@ -77,9 +78,9 @@ Frequency:  Monthly  -->
 * Data URL: https://files.zillowstatic.com/research/public_csvs/zhvi/Metro_zhvi_uc_sfrcondo_tier_0.33_0.67_sm_sa_month.csv?t=1730644370 (All Homes Combined Prices)
 * Data URL: https://files.zillowstatic.com/research/public_csvs/zhvi/Metro_zhvi_uc_sfr_tier_0.33_0.67_sm_sa_month.csv?t=1730644370 (Single Family Home Prices)
 * Data URL: https://files.zillowstatic.com/research/public_csvs/zordi/Metro_zordi_uc_sfr_month.csv?t=1730644371 (Single Family Rental Home Demand)
+* Data URL: https://files.zillowstatic.com/research/public_csvs/zordi/Metro_zordi_uc_sfr_month.csv?t=1731509126 (Single Family Rental Demand)
 * Data URL: https://files.zillowstatic.com/research/public_csvs/zordi/Metro_zordi_uc_sfrcondomfr_month.csv?t=1730644371 (All Hometypes Combined Rental Demand)
 * Data URL: https://files.zillowstatic.com/research/public_csvs/market_temp_index/Metro_market_temp_index_uc_sfrcondo_month.csv?t=1730644371 (Housing Market Heat Index)
-
 * Data Type: CSV
 
 #### Short description of the DataSource:
@@ -89,6 +90,7 @@ The Zillow Economic Research team publishes a variety of real estate metrics inc
 1. Home Prices: Zillow Home Value Index (ZHVI): A measure of the typical home value and market changes across a given region and housing type. It reflects the typical value for homes in the 35th to 65th percentile range.
 2. Home Rental Prices: Zillow Observed Rent Index (ZORI): A smoothed measure of the typical observed market rate rent across a given region. ZORI is a repeat-rent index that is weighted to the rental housing stock to ensure representativeness across the entire market, not just those homes currently listed for-rent. The index is dollar-denominated by computing the mean of listed rents that fall into the 35th to 65th percentile range for all homes and apartments in a given region, which is weighted to reflect the rental housing stock.
 3. Rental Home Demand: Zillow Observed Renter Demand Index (ZORDI): A measure of the typical observed rental market engagement across a region. ZORDI tracks engagement on Zillow’s rental listings to proxy changes in rental demand. The metric is smoothed to remove volatility. 
+4. Housing Markey heat Index: A measure that aims to capture the balance of for-sale supply and demand in a given market for all types of homes e.g., a higher number means the market is more tilted in favor of sellers.
 
 
 ## Work Packages
@@ -97,7 +99,7 @@ The Zillow Economic Research team publishes a variety of real estate metrics inc
 
 1. Select Datasets
 2. Build an automated data pipeline
-3. perform Exploratory Data Analysis and Feature Engineering
-4. Make Analysis Report
-5. Optional: Statistical Modelling for Prediction of Trends
-6. Reporting on findings
+3. Perform Exploratory Data Analysis and Feature Engineering
+4. Make Data Report
+5. Make Final Analysis Report
+6. Presentation
