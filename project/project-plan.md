@@ -29,12 +29,12 @@ Analysis Steps:
 ### Datasource1: 
 * Metadata URL: https://fred.stlouisfed.org/
 * Data URL: https://tinyurl.com/CPIInflationcsv (CPI)
-<!-- * Data URL: https://tinyurl.com/RMHIncomecsv (Median Household Income) -->
 * Data URL: https://tinyurl.com/RDPIcsv (Real Disposable Personal Income)
 * Data URL: https://tinyurl.com/mortgagecsv (30Y Mortgage Fixed Rates)
 * Data URL: https://tinyurl.com/15mortgagecsv (15Y Mortgage Fixed Rates)
-<!-- * Data URL: https://fred.stlouisfed.org/release?t=&et=&rid=113&ob=pv&od=&tg=&tt=&pageID=2 (Unemployment Rate Data) - Optional -->
 * Data Type: CSV
+<!-- * Data URL: https://tinyurl.com/RMHIncomecsv (Median Household Income) -->
+<!-- * Data URL: https://fred.stlouisfed.org/release?t=&et=&rid=113&ob=pv&od=&tg=&tt=&pageID=2 (Unemployment Rate Data) - Optional -->
 
 #### Short description of the DataSource:
 Federal Reserve Bank of St. Louis (FRED) USA, is a database of more than 800,000 economic data series from over 100 sources covering issues and information relating to banking, business, consumer and producer price indices, employment, population, exchange rates, gross domestic product, interest rates, trade and international transactions, and U.S. financial data. In general, the Federal Reserve Bank of St. Louis encourages the use of FRED data, and associated materials, to support policymakers, researchers, journalists, teachers, students, businesses, and the general public. FRED provides data and data services to the public for non-commercial, educational, and personal uses subject to a few prohibitions.
