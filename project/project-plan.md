@@ -1,5 +1,5 @@
 # Project Plan
-
+![image alt](https://github.com/muhammadajlal/made-template-23456620/blob/main/project/picture.png?raw=true)
 ## Title
 <!-- Give your project a short title. -->
 Analyzing Effect of Selected Macroeconomic Indicators on Housing Affordability in USA.
