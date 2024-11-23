@@ -215,36 +215,84 @@ def merge_n_clean_transformed_data(macroeconomic_transformed_data, housing_trans
     final_merged_data = {}
 
     try:
-        
-        macroeconomic_merged_data = macroeconomic_transformed_data["CPI"]
-        macroeconomic_merged_data = macroeconomic_merged_data.merge(macroeconomic_transformed_data["Interest Rates (30-Year Fixed Mortgage)"][["DATE", "MORTGAGE30US_MonthlyAvg"]], on="DATE", how="inner")
-        macroeconomic_merged_data = macroeconomic_merged_data.merge(macroeconomic_transformed_data["Interest Rates (15-Year Fixed Mortgage)"][["DATE", "MORTGAGE15US_MonthlyAvg"]], on="DATE", how="inner")
-        macroeconomic_merged_data = macroeconomic_merged_data.merge(macroeconomic_transformed_data["Real Disposable Personal Income"], on="DATE", how="inner")
-        
-        housing_merged_data = housing_transformed_data["Single Family Home Prices"]
-        housing_merged_data = housing_merged_data.merge(housing_transformed_data["All Hometypes Combined Prices"][["DATE", "Region", "All_HomePrice"]], on=["DATE", "Region"], how="left")
-        housing_merged_data = housing_merged_data.merge(housing_transformed_data["Single Family Rental Prices"][["DATE", "Region", "SF_RentalPrice"]], on=["DATE", "Region"], how="left")
-        housing_merged_data = housing_merged_data.merge(housing_transformed_data["All Hometypes Rental Prices"][["DATE", "Region", "All_RentalPrice"]], on=["DATE", "Region"], how="left")
-        housing_merged_data = housing_merged_data.merge(housing_transformed_data["Single Family Rental Home Demand"][["DATE", "Region", "SF_RentalDemand"]], on=["DATE", "Region"], how="left")
-        housing_merged_data = housing_merged_data.merge(housing_transformed_data["All Hometypes Rental Home Demand"][["DATE", "Region", "All_RentalDemand"]], on=["DATE", "Region"], how="left")
-        housing_merged_data = housing_merged_data.merge(housing_transformed_data["All Hometypes Housing Market Heat Index"][["DATE", "Region", "H_Mkt_HeatIndex"]], on=["DATE", "Region"], how="left")    
+        # Initialize the merged data with None
+        macroeconomic_merged_data = None
+
+        # Implementing merge logic which  can still merge the available datasets even some are missing
+        if "CPI" in macroeconomic_transformed_data:
+            macroeconomic_merged_data = macroeconomic_transformed_data["CPI"]
+
+        if "Interest Rates (30-Year Fixed Mortgage)" in macroeconomic_transformed_data:
+            if macroeconomic_merged_data is not None:
+                macroeconomic_merged_data = macroeconomic_merged_data.merge(
+                    macroeconomic_transformed_data["Interest Rates (30-Year Fixed Mortgage)"][["DATE", "MORTGAGE30US_MonthlyAvg"]],
+                    on="DATE",
+                    how="inner"
+                )
+            else:
+                macroeconomic_merged_data = macroeconomic_transformed_data["Interest Rates (30-Year Fixed Mortgage)"][["DATE", "MORTGAGE30US_MonthlyAvg"]]
+
+        if "Interest Rates (15-Year Fixed Mortgage)" in macroeconomic_transformed_data:
+            if macroeconomic_merged_data is not None:
+                macroeconomic_merged_data = macroeconomic_merged_data.merge(
+                    macroeconomic_transformed_data["Interest Rates (15-Year Fixed Mortgage)"][["DATE", "MORTGAGE15US_MonthlyAvg"]],
+                    on="DATE",
+                    how="inner"
+                )
+            else:
+                macroeconomic_merged_data = macroeconomic_transformed_data["Interest Rates (15-Year Fixed Mortgage)"][["DATE", "MORTGAGE15US_MonthlyAvg"]]
+
+        if "Real Disposable Personal Income" in macroeconomic_transformed_data:
+            if macroeconomic_merged_data is not None:
+                macroeconomic_merged_data = macroeconomic_merged_data.merge(
+                    macroeconomic_transformed_data["Real Disposable Personal Income"],
+                    on="DATE",
+                    how="inner"
+                )
+            else:
+                macroeconomic_merged_data = macroeconomic_transformed_data["Real Disposable Personal Income"]
+
+        # Merge available housing datasets
+        housing_merged_data = None
+
+        if "Single Family Home Prices" in housing_transformed_data:
+            housing_merged_data = housing_transformed_data["Single Family Home Prices"]
+
+        for dataset_key, column_subset in [
+            ("All Hometypes Combined Prices", ["DATE", "Region", "All_HomePrice"]),
+            ("Single Family Rental Prices", ["DATE", "Region", "SF_RentalPrice"]),
+            ("All Hometypes Rental Prices", ["DATE", "Region", "All_RentalPrice"]),
+            ("Single Family Rental Home Demand", ["DATE", "Region", "SF_RentalDemand"]),
+            ("All Hometypes Rental Home Demand", ["DATE", "Region", "All_RentalDemand"]),
+            ("All Hometypes Housing Market Heat Index", ["DATE", "Region", "H_Mkt_HeatIndex"]),
+        ]:
+            if dataset_key in housing_transformed_data:
+                if housing_merged_data is not None:
+                    housing_merged_data = housing_merged_data.merge(
+                        housing_transformed_data[dataset_key][column_subset],
+                        on=["DATE", "Region"],
+                        how="left"
+                    )
+                else:
+                    housing_merged_data = housing_transformed_data[dataset_key][column_subset]    
         
         # Save the merged datasets to separate files
         os.makedirs(OUTPUT_DIR, exist_ok=True)
 
+        # Save the merged macroeconomic data to a separate file
         if macroeconomic_merged_data is not None:
             macroeconomic_merged_data.to_csv(macroeconomic_output_file, index=False)
             print(f"1st Merge operation Successfull! Merged Macroeconomic dataset saved to {macroeconomic_output_file}\n{'-'*150}")
         else:    
-            print("Cannot save merged macroeconomic dataset. Error in merging individual macroeconomic datasets.\n{'-'*100}")
+            print("Error in merging individual macroeconomic datasets! No Macroeconomic Data found. \n{'-'*100}")
             return None 
     
-        # Save the merged housing final_merged_data to a separate file
+        # Save the merged housing data to a separate file
         if housing_merged_data is not None:
             housing_merged_data.to_csv(housing_output_file, index=False)
             print(f"2nd Merge Operation Successfull! Merged Housing dataset saved to {housing_output_file}\n{'-'*150}")
         else:
-            print("Cannot save merged housing dataset. Error in merging individual housing datasets.\n{'-'*100}")
+            print("Error in merging individual housing datasets! No Housing Data found.\n{'-'*100}")
             return None
 
         
@@ -262,32 +310,54 @@ def merge_n_clean_transformed_data(macroeconomic_transformed_data, housing_trans
         final_merged_data['Region_Encoded'] = le.fit_transform(final_merged_data['Region'])
         final_merged_data['Region'] = le.inverse_transform(final_merged_data['Region_Encoded'])
 
+        # implementing prework for to use regression model
         predictors = ['Year', 'Month', 'SF_HomePrice', 'All_HomePrice', 'Region_Encoded']
         target_columns = ['SF_RentalPrice', 'All_RentalPrice', 'SF_RentalDemand', 'All_RentalDemand', 'H_Mkt_HeatIndex']
-        # Rental Prices (Missing for 2014 only)
-        for target_column in ['SF_RentalPrice', 'All_RentalPrice']:
-            final_merged_data = Regress_Missing_Values(final_merged_data, 
-                                               target_column=target_column, 
-                                               time_range_to_predict=('2014-01-01', '2014-12-01'), 
-                                               predictors=predictors)
+        available_target_columns = [col for col in target_columns if col in final_merged_data.columns]
 
-        # Rental Demand (Missing for 2014-2017)
-        for target_column in ['SF_RentalDemand', 'All_RentalDemand']:
-            final_merged_data = Regress_Missing_Values(final_merged_data, 
-                                               target_column=target_column, 
-                                               time_range_to_predict=('2014-01-01', '2017-12-01'), 
-                                               predictors=predictors)
+        # Define date ranges for each target column
+        target_date_ranges = {
+            'SF_RentalPrice': ('2014-01-01', '2014-12-01'),
+            'All_RentalPrice': ('2014-01-01', '2014-12-01'),
+            'SF_RentalDemand': ('2014-01-01', '2017-12-01'),
+            'All_RentalDemand': ('2014-01-01', '2017-12-01'),
+            'H_Mkt_HeatIndex': ('2014-01-01', '2019-12-01')
+        }
+        # implementing a loop to counter if any of the target column or predictor is missing
+        for target_column in target_columns:
+            # Dynamically adjust target columns
+            if target_column not in final_merged_data.columns:
+                print(f"Skipping {target_column}: Column missing in the dataset.")
+                continue
 
-        # Heat Index (Missing for 2015-2016)
-        target_colum_index = 'H_Mkt_HeatIndex'
-        final_merged_data = Regress_Missing_Values(final_merged_data, 
-                                                target_column=target_colum_index, 
-                                                time_range_to_predict=('2014-01-01', '2019-12-01'), 
-                                                predictors=predictors)
+            # Dynamically adjust predictors
+            available_predictors = [col for col in predictors if col in final_merged_data.columns]
+            if len(available_predictors) == 0:
+                print(f"Skipping {target_column}: No predictors available.")
+                continue
+
+            # Get the date range for the target column
+            time_range_to_predict = target_date_ranges.get(target_column, None)
+            if not time_range_to_predict:
+                print(f"Skipping {target_column}: Date range not defined.")
+                continue
+
+            try:
+                # Regressing Missing Values
+                final_merged_data = Regress_Missing_Values(
+                final_merged_data, 
+                target_column=target_column, 
+                time_range_to_predict=time_range_to_predict, 
+                predictors=available_predictors
+                )
+                print(f"Regressing {target_column} using predictors: {available_predictors} "
+                f"for date range {time_range_to_predict}.")
+            except Exception as e:
+                print(f"Failed to regress {target_column}: {e}")
 
         # Drop temporary columns
         final_merged_data.drop(columns=['Year', 'Month', 'Region_Encoded'], inplace=True)
-        print(f"All the Missing values in {target_columns} filled using Gradient Boosting Regression Model.\n{'-'*150}")
+        print(f"All the Missing values in {available_target_columns} filled using Gradient Boosting Regression Model.\n{'-'*150}")
 
         # Save the final merged dataset with predictions
         if final_merged_data is not None:
