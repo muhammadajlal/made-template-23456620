@@ -1,6 +1,7 @@
 import pandas as pd
 import os
 import requests
+import time
 from io import StringIO
 from sklearn.preprocessing import LabelEncoder
 from sklearn.ensemble import GradientBoostingRegressor
@@ -33,15 +34,22 @@ final_output_file = os.path.join(OUTPUT_DIR, "final_merged_dataset.csv")
 
 # Extraction of Data
 def extract_data(url: str) -> pd.DataFrame:
-    try:
-        response = requests.get(url)
-        response.raise_for_status()
-        data = pd.read_csv(StringIO(response.text))
-        print(f"Data extraction successful from {url}")
-        return data
-    except Exception as e:
-        print(f"Error in data extraction from {url}: {e}")
-        return pd.DataFrame()
+    max_attempts = 3
+    for attempt in range(1, max_attempts + 1):
+        try:
+            response = requests.get(url)
+            response.raise_for_status()
+            data = pd.read_csv(StringIO(response.text))
+            print(f"Data extraction successful from {url}")
+            return data
+        except Exception as e:
+            print(f"Attempt {attempt} failed for {url}: {e}")
+            if attempt < max_attempts:
+                print("Retrying...")
+                time.sleep(2)  # Wait 2 seconds before retrying
+            else:
+                print(f"Failed to extract data from {url} after {max_attempts} attempts.")
+                return pd.DataFrame()
 
 # Tranformation of Data
 # 1. CPI (Consumer Price Index) Data Transformation
@@ -53,7 +61,7 @@ def transform_cpi_data(data: pd.DataFrame) -> pd.DataFrame:
         data.insert(2, 'Inflation', YoY_Percentage_Change_Inflation)
         # Filtering out the data for the last 10 years
         data['DATE'] = pd.to_datetime(data['DATE'])  # Convert 'DATE' column to datetime objects
-        data = data[data['DATE'] >= '2014-01-01']
+        data = data[data['DATE'] >= '2015-01-01']
         # Renaming column for better clarity
         data = data.rename(columns={'CPIAUCNS': 'CPI'})
         print("CPI Data transformation successful.")
@@ -82,7 +90,7 @@ def transform_interest_rate_data(data: pd.DataFrame, rate_type: str = '30Y') -> 
         monthly_avg = monthly_avg.rename(columns={rate_column: output_column})
 
         # Filter for the last 10 years
-        monthly_avg = monthly_avg[monthly_avg['DATE'] >= '2014-01-01']
+        monthly_avg = monthly_avg[monthly_avg['DATE'] >= '2015-01-01']
 
         print(f"Interest Rates Data ({rate_type}) transformation successful.")
         return monthly_avg
@@ -96,7 +104,7 @@ def transform_disposable_income_data(data: pd.DataFrame) -> pd.DataFrame:
     try:
         # Filtering out the data for the last 10 years
         data['DATE'] = pd.to_datetime(data['DATE'])
-        data = data[data['DATE'] >= '2014-01-01']
+        data = data[data['DATE'] >= '2015-01-01']
         # Renaming column for better clarity
         data = data.rename(columns={'DSPIC96': 'RDP_Income'})
         print("Disposable Income Data transformation successful.")
@@ -121,7 +129,7 @@ def transform_zillow_home_price_and_rental_data(data: pd.DataFrame, data_type: s
         data = pd.melt(df_transposed, id_vars='DATE', var_name='Region', value_name = data_type) 
         # Filtering out the data for the last 10 years
         data['DATE'] = pd.to_datetime(data['DATE'])
-        data = data[data['DATE'] >= '2014-01-01']
+        data = data[data['DATE'] >= '2015-01-01']
 
         print(f"{data_type} Data transformation successful.")
         return data
@@ -312,16 +320,16 @@ def merge_n_clean_transformed_data(macroeconomic_transformed_data, housing_trans
 
         # implementing prework for to use regression model
         predictors = ['Year', 'Month', 'SF_HomePrice', 'All_HomePrice', 'Region_Encoded']
-        target_columns = ['SF_RentalPrice', 'All_RentalPrice', 'SF_RentalDemand', 'All_RentalDemand', 'H_Mkt_HeatIndex']
+        target_columns = ['SF_RentalDemand', 'All_RentalDemand', 'H_Mkt_HeatIndex']
         available_target_columns = [col for col in target_columns if col in final_merged_data.columns]
 
         # Define date ranges for each target column
         target_date_ranges = {
-            'SF_RentalPrice': ('2014-01-01', '2014-12-01'),
-            'All_RentalPrice': ('2014-01-01', '2014-12-01'),
-            'SF_RentalDemand': ('2014-01-01', '2017-12-01'),
-            'All_RentalDemand': ('2014-01-01', '2017-12-01'),
-            'H_Mkt_HeatIndex': ('2014-01-01', '2019-12-01')
+            #'SF_RentalPrice': ('2014-01-01', '2014-12-01'),
+            #'All_RentalPrice': ('2014-01-01', '2014-12-01'),
+            'SF_RentalDemand': ('2015-01-01', '2020-05-01'),
+            'All_RentalDemand': ('2015-01-01', '2020-05-01'),
+            'H_Mkt_HeatIndex': ('2015-01-01', '2019-12-01')
         }
         # implementing a loop to counter if any of the target column or predictor is missing
         for target_column in target_columns:
@@ -354,15 +362,24 @@ def merge_n_clean_transformed_data(macroeconomic_transformed_data, housing_trans
                 f"for date range {time_range_to_predict}.")
             except Exception as e:
                 print(f"Failed to regress {target_column}: {e}")
+        print(f"Yayy! Regression Model Ready\n{'-'*150}")
 
         # Drop temporary columns
         final_merged_data.drop(columns=['Year', 'Month', 'Region_Encoded'], inplace=True)
-        print(f"All the Missing values in {available_target_columns} filled using Gradient Boosting Regression Model.\n{'-'*150}")
 
+        # For the sake of completeness we will put a ffil and bffil operation to handle future cases e.g., There were 14 values missing in only All_RentalPrice Column.
+        final_merged_data.ffill(inplace=True)
+        final_merged_data.bfill(inplace=True)
         # Save the final merged dataset with predictions
         if final_merged_data is not None:
             final_merged_data.to_csv(final_output_file, index=False)
-            print(f"Final Merge Operation Successful! Final merged dataset saved to {final_output_file}\n{'-'*150}")
+            print(f"Final Merge Operation (Housing + Macroeconomic Data) Successful! Final merged dataset saved to {final_output_file}")
+
+            if any(final_merged_data[col].isna().any() for col in available_target_columns):
+                print(f"Failed to fill missing values in columns {available_target_columns}.")
+            else:
+                print(f"All the Missing values in columns {available_target_columns} filled using Gradient Boosting Regression Model.")
+                print(f"All other missing values filled using ffill and bfill methods.\n{'-'*150}")
             return final_merged_data
         else:
             print("Cannot make a final dataset! Error in merging both transformed datasets.")
@@ -382,29 +399,43 @@ def main():
             name = dataset["name"]
             url = dataset["url"]
             print(f"Processing {name} ({data_type} dataset {idx})")
-            
+
             # Extraction
             data = extract_data(url)
-            if not data.empty:
+            if data.empty:
+                print(f"Skipping {name} ({data_type} dataset {idx}) due to extraction failure.\n{'-'*150}")
+                continue  # Skip to the next dataset if extraction fails
 
+            # Transformation
+            try:
                 transformed_data = transform_data(data, name)
-            
-                # Store transformed final_merged_data
-                if data_type == "macroeconomic":
-                    macroeconomic_transformed_data[name] = transformed_data
-                elif data_type == "housing":
-                    housing_transformed_data[name] = transformed_data
-            
-            # Load transformed final_merged_data
-            load_data(transformed_data, data_type, idx, name)
+            except Exception as e:
+                print(f"Error transforming {name}: {e}\n{'-'*150}")
+                continue  # Skip to the next dataset if transformation fails
 
-    # Merging transformed final_merged_data tables into single dataset
-    final_merged_data = merge_n_clean_transformed_data(macroeconomic_transformed_data, housing_transformed_data)
+            # Store transformed data
+            if data_type == "macroeconomic":
+                macroeconomic_transformed_data[name] = transformed_data
+            elif data_type == "housing":
+                housing_transformed_data[name] = transformed_data
 
-    if final_merged_data is not None:
-        print("ETL pipeline completed.")
-    else:
-        print("ETL pipeline failed during merging.")
+            # Load transformed data
+            try:
+                load_data(transformed_data, data_type, idx, name)
+            except Exception as e:
+                print(f"Error loading {name}: {e}\n{'-'*150}")
+
+    # Merging transformed data tables into a single dataset
+    try:
+        final_merged_data = merge_n_clean_transformed_data(macroeconomic_transformed_data, housing_transformed_data)
+        if final_merged_data is not None:
+            print(f"ETL pipeline completed successfully.")
+            print(f"Data is ready for anlaysis.\n{'-'*150}")
+        else:
+            print(f"ETL pipeline failed during merging.\n{'-'*150}")
+    except Exception as e:
+        print(f"Error during merging: {e}\n{'-'*150}")
+
 
 # Entry point check
 if __name__ == "__main__":
