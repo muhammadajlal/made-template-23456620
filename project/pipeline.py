@@ -370,6 +370,8 @@ def merge_n_clean_transformed_data(macroeconomic_transformed_data, housing_trans
         # For the sake of completeness we will put a ffil and bffil operation to handle future cases e.g., There were 14 values missing in only All_RentalPrice Column.
         final_merged_data.ffill(inplace=True)
         final_merged_data.bfill(inplace=True)
+        # because the original values for these three columns are in one decimal point
+        final_merged_data[['SF_RentalDemand', 'All_RentalDemand', 'H_Mkt_HeatIndex', 'Inflation', 'MORTGAGE30US_MonthlyAvg', 'MORTGAGE15US_MonthlyAvg']] = final_merged_data[['SF_RentalDemand', 'All_RentalDemand', 'H_Mkt_HeatIndex', 'Inflation', 'MORTGAGE30US_MonthlyAvg', 'MORTGAGE15US_MonthlyAvg']].round(1)
         # Save the final merged dataset with predictions
         if final_merged_data is not None:
             final_merged_data.to_csv(final_output_file, index=False)
