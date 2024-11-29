@@ -1,0 +1,91 @@
+pipeline TemperatureeraturePipeline {
+
+    TemperatureExtractor
+        -> TemperatureZipInterpreter
+        -> TemperatureFilePicker
+        -> TemperatureTextFileInterpreter
+        -> TemperatureCSVInterpreter
+        -> TemperatureNameHeaderWriter
+        -> BatteryNameHeaderWriter
+        -> TemperatureTableInterpretor
+        -> TemperatureToFahrenheitTransformer
+        -> BatteryTemperatureToFahrenheitTransformer
+        -> TemperatureLoader;
+
+    block TemperatureExtractor oftype HttpExtractor {
+		url: "https://www.mowesta.com/data/measure/mowesta-dataset-20221107.zip";
+	}
+
+    block TemperatureZipInterpreter oftype ArchiveInterpreter {
+        archiveType: "zip";
+    }
+
+    block TemperatureFilePicker oftype FilePicker {
+        path:'/data.csv';
+    }
+
+	block TemperatureTextFileInterpreter oftype TextFileInterpreter {}
+
+	block TemperatureCSVInterpreter oftype CSVInterpreter {
+		delimiter: ";";
+	}
+
+    block TemperatureNameHeaderWriter oftype CellWriter {
+        at: range A1:E1;
+        write: ["id", "producer","model","month","temperature"];
+    }
+
+    block BatteryNameHeaderWriter oftype CellWriter {
+        at: cell J1;
+        write:["battery_temperature"];
+    }
+
+    block TemperatureTableInterpretor oftype TableInterpreter {
+        header:true;
+        columns: [
+            "id" oftype PostiveInteger,
+            "producer" oftype text,
+            "model" oftype text,
+            "month" oftype MonthType,
+            "temperature" oftype decimal,
+            "battery_temperature" oftype decimal
+        ];
+    }
+
+    transform CtoF {
+        from Celsius oftype decimal;
+        to Fahrenheit oftype decimal;
+        Fahrenheit: (Celsius * 9/5) + 32;
+    }
+
+    block TemperatureToFahrenheitTransformer oftype TableTransformer {
+        inputColumns: ['temperature'];
+        outputColumn: 'temperature';
+        uses: CtoF;
+    }
+
+    block BatteryTemperatureToFahrenheitTransformer oftype TableTransformer {
+        inputColumns: ['battery_temperature'];
+        outputColumn: 'battery_temperature';
+        uses: CtoF;
+    }
+
+    block TemperatureLoader oftype SQLiteLoader {
+        table:'temperatures';
+        file:'temperatures.sqlite';
+    }
+
+    constraint PositiveConstraint on integer:
+        value >= 0;
+
+    valuetype PostiveInteger oftype integer {
+        constraints: [PositiveConstraint];
+    }
+
+    constraint MonthConstraint on integer:
+        value >= 1 and value <= 12;
+    
+    valuetype MonthType oftype integer {
+        constraints:[MonthConstraint];
+    }
+}
