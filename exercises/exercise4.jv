@@ -1,7 +1,7 @@
 pipeline TemperatureeraturePipeline {
 
     TemperatureExtractor
-        -> TemperatureZipInterpreter
+        -> TemperatureZipArchiveInterpreter
         -> TemperatureFilePicker
         -> TemperatureTextFileInterpreter
         -> TemperatureCSVInterpreter
@@ -16,7 +16,7 @@ pipeline TemperatureeraturePipeline {
 		url: "https://www.mowesta.com/data/measure/mowesta-dataset-20221107.zip";
 	}
 
-    block TemperatureZipInterpreter oftype ArchiveInterpreter {
+    block TemperatureZipArchiveInterpreter oftype ArchiveInterpreter {
         archiveType: "zip";
     }
 
@@ -52,7 +52,7 @@ pipeline TemperatureeraturePipeline {
         ];
     }
 
-    transform CtoF {
+    transform Celcius2Farenheit {
         from Celsius oftype decimal;
         to Fahrenheit oftype decimal;
         Fahrenheit: (Celsius * 9/5) + 32;
@@ -61,13 +61,13 @@ pipeline TemperatureeraturePipeline {
     block TemperatureToFahrenheitTransformer oftype TableTransformer {
         inputColumns: ['temperature'];
         outputColumn: 'temperature';
-        uses: CtoF;
+        uses: Celcius2Farenheit;
     }
 
     block BatteryTemperatureToFahrenheitTransformer oftype TableTransformer {
         inputColumns: ['battery_temperature'];
         outputColumn: 'battery_temperature';
-        uses: CtoF;
+        uses: Celcius2Farenheit;
     }
 
     block TemperatureLoader oftype SQLiteLoader {
