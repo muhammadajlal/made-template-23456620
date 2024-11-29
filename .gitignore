@@ -3,3 +3,4 @@
 !/data/.gitkeep
 /project/output/*
 /project/data/*
+/project/__pycache__/*
