@@ -1,4 +1,4 @@
-pipeline TemperatureeraturePipeline {
+pipeline TemperaturePipeline {
 
     TemperatureExtractor
         -> TemperatureZipArchiveInterpreter
@@ -6,7 +6,7 @@ pipeline TemperatureeraturePipeline {
         -> TemperatureTextFileInterpreter
         -> TemperatureCSVInterpreter
         -> TemperatureNameHeaderWriter
-        -> BatteryNameHeaderWriter
+        -> BatteryTemperatureNameHeaderWriter
         -> TemperatureTableInterpretor
         -> TemperatureToFahrenheitTransformer
         -> BatteryTemperatureToFahrenheitTransformer
@@ -35,7 +35,7 @@ pipeline TemperatureeraturePipeline {
         write: ["id", "producer","model","month","temperature"];
     }
 
-    block BatteryNameHeaderWriter oftype CellWriter {
+    block BatteryTemperatureNameHeaderWriter oftype CellWriter {
         at: cell J1;
         write:["battery_temperature"];
     }
