@@ -28,5 +28,5 @@ jobs:
 
     - name: Run tests
       run: |
-        chmod +x .project/tests.sh  # Ensure the script is executable
-        .project/tests.sh
+        chmod +x ./project/tests.sh  # Ensure the script is executable
+        ./project/tests.sh
