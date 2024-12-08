@@ -27,8 +27,6 @@ jobs:
         pip install -r ./project/requirements.txt
 
     - name: Run tests
-      env:
-        OUTPUT_DIR: ${{ secrets.OUTPUT_DIR }}
       run: |
         chmod +x .project/tests.sh  # Ensure the script is executable
         .project/tests.sh
