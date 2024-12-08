@@ -6,7 +6,7 @@ on:
       - main  # Trigger on pushes to the main branch
 
 jobs:
-  test:
+  CI-Pipeline-Job:
     runs-on: ubuntu-latest
 
     steps:
