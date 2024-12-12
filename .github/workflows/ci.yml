@@ -3,7 +3,7 @@ name: CI Pipeline
 on:
   push:
     branches:
-      - main  # Trigger on pushes to the main branch
+      - main  
 
 jobs:
   CI-Pipeline-Job:
@@ -16,7 +16,7 @@ jobs:
     - name: Set up Python environment
       uses: actions/setup-python@v4
       with:
-        python-version: '3.9'  # Specify Python version to use
+        python-version: '3.9'  
 
     - name: Install dependencies
       run: |
