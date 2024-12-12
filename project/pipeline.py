@@ -59,6 +59,7 @@ def transform_cpi_data(data: pd.DataFrame) -> pd.DataFrame:
         YoY_Percentage_Change_Inflation = data['CPIAUCNS'].pct_change(periods=12) * 100
         YoY_Percentage_Change_Inflation = YoY_Percentage_Change_Inflation.round(1)
         data.insert(2, 'Inflation', YoY_Percentage_Change_Inflation)
+        data = data.rename(columns={'observation_date': 'DATE'})
         # Filtering out the data for the last 10 years
         data['DATE'] = pd.to_datetime(data['DATE'])  # Convert 'DATE' column to datetime objects
         data = data[data['DATE'] >= '2015-01-01']
@@ -76,7 +77,7 @@ def transform_interest_rate_data(data: pd.DataFrame, rate_type: str = '30Y') -> 
         # Select the correct column based on the rate type
         rate_column = 'MORTGAGE30US' if rate_type == '30Y' else 'MORTGAGE15US'
         output_column = f"{rate_column}_MonthlyAvg"
-        
+        data = data.rename(columns={'observation_date': 'DATE'})
         # Convert DATE column to datetime and extract Month and Year
         data['DATE'] = pd.to_datetime(data['DATE'])
         data['Month'] = data['DATE'].dt.month
@@ -102,6 +103,7 @@ def transform_interest_rate_data(data: pd.DataFrame, rate_type: str = '30Y') -> 
 # 3. Real Disposable Income Data Transformation
 def transform_disposable_income_data(data: pd.DataFrame) -> pd.DataFrame:
     try:
+        data = data.rename(columns={'observation_date': 'DATE'})
         # Filtering out the data for the last 10 years
         data['DATE'] = pd.to_datetime(data['DATE'])
         data = data[data['DATE'] >= '2015-01-01']
