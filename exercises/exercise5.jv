@@ -46,7 +46,7 @@ pipeline GTFSDataPipeline {
 
     block GTFSDataLoader oftype SQLiteLoader {
         table: "stops";
-        file: "./GTFSData.sqlite";
+        file: "./gtfs.sqlite";
     }
 
     valuetype GeogrpahicCoordinates oftype decimal {
