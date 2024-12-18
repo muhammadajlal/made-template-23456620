@@ -52,7 +52,7 @@ pipeline GTFSDataPipeline {
     valuetype GeogrpahicCoordinates oftype decimal {
         constraints: [ValidCoordinates];
     }
-
+   
     constraint ValidCoordinates oftype RangeConstraint {
         lowerBound: -90;
         lowerBoundInclusive: true;
