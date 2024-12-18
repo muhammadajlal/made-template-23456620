@@ -1,0 +1,78 @@
+pipeline GTFSDataPipeline {
+    GTFSDataExtractor
+        -> GTFSDataArchiveInterpreter
+        -> GTFSDataFilePicker
+        -> GTFSDataTextFileInterpreter
+        -> GTFSDataCSVInterpreter
+        -> GTFSDataColumnDeleter
+        -> GTFSDataTableInterpreter
+        -> GTFSDataLoader;
+
+
+    block GTFSDataExtractor oftype HttpExtractor {
+        url: "https://gtfs.rhoenenergie-bus.de/GTFS.zip";
+    }
+
+    block GTFSDataArchiveInterpreter oftype ArchiveInterpreter {
+        archiveType: "zip";
+    }
+
+    block GTFSDataFilePicker oftype FilePicker {
+        path: "/stops.txt";
+    }
+
+    block GTFSDataTextFileInterpreter oftype TextFileInterpreter { }
+
+    block GTFSDataCSVInterpreter oftype CSVInterpreter {
+        delimiter: ',';
+        enclosing: '"';
+    }
+
+    block GTFSDataColumnDeleter oftype ColumnDeleter {
+        delete: [ column B, column D
+        ];
+    }
+
+    block GTFSDataTableInterpreter oftype TableInterpreter {
+        header: true;
+        columns: [
+            "stop_id" oftype integer,
+            "stop_name" oftype stop_name,
+            "stop_lat" oftype GeogrpahicCoordinates,
+            "stop_lon" oftype GeogrpahicCoordinates,
+            "zone_id" oftype ZoneID,
+        ];
+    }
+
+    block GTFSDataLoader oftype SQLiteLoader {
+        table: "stops";
+        file: "./GTFSData.sqlite";
+    }
+
+    valuetype GeogrpahicCoordinates oftype decimal {
+        constraints: [ValidCoordinates];
+    }
+
+    constraint ValidCoordinates oftype RangeConstraint {
+        lowerBound: -90;
+        lowerBoundInclusive: true;
+        upperBound: 90;
+        upperBoundInclusive: true;
+    }
+
+    valuetype stop_name oftype text {
+        constraints: [
+            ValidStopName
+        ];
+    }
+
+    constraint ValidStopName on text: value matches /^[a-zA-ZäöüÄÖÜß\s./-]+$/;
+
+    valuetype ZoneID oftype integer {
+        constraints: [
+            ValidZoneId,
+        ];
+    }
+
+    constraint ValidZoneId on integer: value == 1925;
+}
