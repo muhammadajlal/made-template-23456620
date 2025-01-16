@@ -4,20 +4,19 @@
 ## Main Question
 
 <!-- Think about one main question you want to answer based on the data. -->
-Analyzing Relationship of Selected Macroeconomic Indicators & Housing Affordability in the USA.
+Analyzing the Relationship of Selected Macroeconomic Indicators & Housing Affordability in the USA.
 
 ## Description
 
 <!-- Describe your data science project in max. 200 words. Consider writing about why and how you attempt it. -->
-As a student living in Germany, and having experienced overal invrease in inflation and the housing crisis in metropolitan areas shows how much importance the Housing Sector have in an Economy because house rentals take a large chunk out of our disposable incomes so if rents are high it means one would be left with less money to spend, and this effect gets amplified with with rising inflation as the money loses its value over time. This project would be very insightful for the people who want to leave Germany due to language barriers or other preferences and move to USA (a dream destination for many) as this study attempts to help these people make informed choices based on statistcs. This study would use some macro-economic inicators as a rough measure of economic stability in USA and would also show how bad/good the Housing market is performing in recent years because it also entails how hard/easy is it to start a new life in USA.
+As a student living in Germany, having experienced an overall increase in inflation and the housing crisis in metropolitan areas shows how much importance the Housing Sector has in an Economy because house rentals take a large chunk out of our disposable incomes so if rents are high it means one would be left with less money to spend, and this effect gets amplified with rising inflation as the money loses its value over time. This project would be very insightful for the people who want to leave Germany due to language barriers or other preferences and move to the USA (a dream destination for many) as this study attempts to help these people make informed choices based on statistics. This study would use some macroeconomic indicators as a rough measure of economic stability in the USA and would also show how bad/good the Housing market is performing in recent years because it also entails how hard/easy is it to start a new life in the USA.
 
 Analysis Steps:
-1. Analyzing CPI with single home prices and all homes prices.
+1. Analyzing CPI with single home prices and all home prices.
 2. Analyzing CPI with single home rent prices and all home rent prices.
-3. Analyzing 30/15-year-fixed mortgage rates with the demand of single family and all homes combined.
+3. Analyzing 30/15-year-fixed mortgage rates with the demand of single-family and all homes combined.
 4. Analyzing real-disposable-personal-income growth with CPI, home prices, and home rental prices.
-5. Analyzing Housing Market heat Index with different macroeconomic indicators. 
-5. (Tentative) Analyzing the effect of unemployment rate on house affordability. 
+5. Analyzing the Housing Market Heat Index with different macroeconomic indicators. 
 
 ## Datasources
 
@@ -34,9 +33,9 @@ Analysis Steps:
 <!-- * Data URL: https://fred.stlouisfed.org/release?t=&et=&rid=113&ob=pv&od=&tg=&tt=&pageID=2 (Unemployment Rate Data) - Optional -->
 
 #### Short description of the DataSource:
-Federal Reserve Bank of St. Louis (FRED) USA, is a database of more than 800,000 economic data series from over 100 sources covering issues and information relating to banking, business, consumer and producer price indices, employment, population, exchange rates, gross domestic product, interest rates, trade and international transactions, and U.S. financial data. In general, the Federal Reserve Bank of St. Louis encourages the use of FRED data, and associated materials, to support policymakers, researchers, journalists, teachers, students, businesses, and the general public. FRED provides data and data services to the public for non-commercial, educational, and personal uses subject to a few prohibitions.
+Federal Reserve Bank of St. Louis (FRED) USA, is a database of more than 800,000 economic data series from over 100 sources covering issues and information relating to banking, business, consumer and producer price indices, employment, population, exchange rates, gross domestic product, interest rates, trade and international transactions, and U.S. financial data. In general, the Federal Reserve Bank of St. Louis encourages using FRED data and associated materials to support policymakers, researchers, journalists, teachers, students, businesses, and the general public. FRED provides data and data services to the public for non-commercial, educational, and personal uses subject to a few prohibitions.
 
-All the macro-economic data is sourced from official website of Federal Reserve Bank of St. Louis (FRED), USA. FRED collects data from different government departments e.g., U.S. Bureau of Labor Statistics (BLS) etc and then adds some value to these data sources to make them analysis ready. For example,  BLS provides most of the CPI data in chunks and FRED compiles all the data into a timeseries data with some value additions like smoothing the data for seasoanlity etc. Although, we have downloaded everyhting from FRED but the original departmental sources of different indicators are give below.  
+All the macroeconomic data is sourced from the official website of the Federal Reserve Bank of St. Louis (FRED), USA. FRED collects data from different government departments e.g., the U.S. Bureau of Labor Statistics (BLS), etc and then adds some value to these data sources to make them analysis-ready. For example,  BLS provides most of the CPI data in chunks and FRED compiles all the data into a time series data with some value additions like smoothing the data for seasonality, etc. Although we have downloaded everything from FRED the original departmental sources of different indicators are given below.  
 
 - Consumer Price Index (Inflation).  
 Source: U.S. Bureau of Labor Statistics.  
