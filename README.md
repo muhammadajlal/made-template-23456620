@@ -1,4 +1,4 @@
-# Project Plan
+# Case Study of Top 10 Metropolitans of USA: Relation of Macroeconomic Indicators (Inflation, Interest Rates, and Income) & Housing Affordability
 ![image alt](https://github.com/muhammadajlal/made-template-23456620/blob/main/project/picture.png?raw=true)
 ## Title
 <!-- Give your project a short title. -->
