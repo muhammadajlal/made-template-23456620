@@ -9,14 +9,13 @@ Analyzing the Relationship of Selected Macroeconomic Indicators & Housing Afford
 ## Description
 
 <!-- Describe your data science project in max. 200 words. Consider writing about why and how you attempt it. -->
-As a student living in Germany, having experienced an overall increase in inflation and the housing crisis in metropolitan areas shows how much importance the Housing Sector has in an Economy because house rentals take a large chunk out of our disposable incomes so if rents are high it means one would be left with less money to spend, and this effect gets amplified with rising inflation as the money loses its value over time. This project would be very insightful for the people who want to leave Germany due to language barriers or other preferences and move to the USA (a dream destination for many) as this study attempts to help these people make informed choices based on statistics. This study would use some macroeconomic indicators as a rough measure of economic stability in the USA and would also show how bad/good the Housing market is performing in recent years because it also entails how hard/easy is it to start a new life in the USA.
+As a result of globalization and interconnected economies, we are witnessing an enormous outflow of skilled workers from developing countries towards developed economies like Germany and the USA. Usually, the ground realities of developed economies are not transparent from the home countries of expats, hence it becomes difficult for the skilled workers to make informed decisions while relocating to developed countries. The author particularly wants to analyze housing affordability over the last 10 years in the top 10 Metropolitans of the US. Housing affordability is the most important thing during relocation for expat skilled workers because rental prices constitute a disproportionate chunk of their disposable incomes as compared to other expenses like food, etc. Moreover, the condition of the housing market can be seen as a proxy measure to measure the health of an economy if analyzed side by side with Macroeconomic indicators. This study will provide an outlook on the US economy for people interested in moving there.
 
 Analysis Steps:
-1. Analyzing CPI with single home prices and all home prices.
-2. Analyzing CPI with single home rent prices and all home rent prices.
-3. Analyzing 30/15-year-fixed mortgage rates with the demand of single-family and all homes combined.
-4. Analyzing real-disposable-personal-income growth with CPI, home prices, and home rental prices.
-5. Analyzing the Housing Market Heat Index with different macroeconomic indicators. 
+1. Analyzing CPI/Inflation vis-a-vis Home Prices, Rental Prices, and Rental Demand.
+2. Analyzing Income vis-a-vis Home Prices, Rental Prices, and Rental Demand.
+3. Analyzing 30/15-Year Fixed Mortgage Rates vis-a-vis Home Prices, Rental Prices, and Rental Demand.
+4. Analyzing Disposable Income growth trends with CPI, Home Prices, and Rental Prices.
 
 ## Datasources
 
